@@ -1,7 +1,11 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import './Sidebar.css'
 
 function Sidebar({ collapsed, onToggle }) {
+  const { logout, user } = useAuth()
+  const navigate = useNavigate()
+
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/productos', label: 'Productos', icon: '📦' },
@@ -12,6 +16,15 @@ function Sidebar({ collapsed, onToggle }) {
     { path: '/reportes', label: 'Reportes', icon: '📄' },
     { path: '/lotes', label: 'Lotes FEFO', icon: '🏷️' }
   ]
+
+  const handleLogout = async () => {
+    if (window.confirm('¿Estás seguro de cerrar sesión?')) {
+      const result = await logout()
+      if (result.success) {
+        navigate('/login')
+      }
+    }
+  }
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
@@ -41,6 +54,26 @@ function Sidebar({ collapsed, onToggle }) {
           </NavLink>
         ))}
       </nav>
+
+      <div className="sidebar-footer">
+        {!collapsed && user && (
+          <div className="user-info">
+            <span className="user-icon">👤</span>
+            <div className="user-details">
+              <p className="user-name">Admin</p>
+              <p className="user-email">{user.email}</p>
+            </div>
+          </div>
+        )}
+        <button 
+          className="logout-btn" 
+          onClick={handleLogout}
+          title="Cerrar sesión"
+        >
+          <span className="logout-icon">🚪</span>
+          {!collapsed && <span>Cerrar Sesión</span>}
+        </button>
+      </div>
     </aside>
   )
 }

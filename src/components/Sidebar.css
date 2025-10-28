@@ -10,6 +10,8 @@
   z-index: 1000;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar.collapsed {
@@ -68,6 +70,7 @@
 
 .sidebar-nav {
   padding: 16px 0;
+  flex: 1;
 }
 
 .sidebar-link {
@@ -115,6 +118,102 @@
   display: none;
 }
 
+/* ============================================
+   SIDEBAR FOOTER - User Info & Logout
+   ============================================ */
+
+.sidebar-footer {
+  padding: 16px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.user-icon {
+  font-size: 2rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  margin: 0 0 4px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.938rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fecaca;
+}
+
+.logout-icon {
+  font-size: 1.125rem;
+}
+
+.sidebar.collapsed .user-info {
+  display: none;
+}
+
+.sidebar.collapsed .logout-btn {
+  padding: 12px 10px;
+  justify-content: center;
+}
+
+.sidebar.collapsed .logout-btn span:not(.logout-icon) {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -142,5 +241,21 @@
   
   .toggle-btn {
     display: none;
+  }
+
+  .sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-info {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .logout-btn {
+    width: auto;
+    flex-shrink: 0;
   }
 }
