@@ -2,28 +2,118 @@
   display: flex;
   min-height: 100vh;
   background-color: #f9fafb;
+  position: relative;
 }
 
 .main-content {
   flex: 1;
   margin-left: 260px;
-  padding: 16px;
+  padding: 24px;
   background-color: #f9fafb;
   min-height: 100vh;
   transition: margin-left 0.3s ease;
+  overflow-x: hidden;
 }
 
 .layout.sidebar-collapsed .main-content {
   margin-left: 70px;
 }
 
+/* ============================================
+   MOBILE MENU
+   ============================================ */
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1100;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.mobile-menu-btn:active {
+  transform: translateY(0);
+}
+
+.hamburger-icon {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    padding: 12px;
+    padding: 72px 16px 16px 16px; /* Espacio para el botón hamburguesa */
   }
   
   .layout.sidebar-collapsed .main-content {
     margin-left: 0;
+  }
+
+  .layout.mobile .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 72px 12px 12px 12px;
+  }
+
+  .mobile-menu-btn {
+    top: 12px;
+    left: 12px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .hamburger-icon {
+    font-size: 1.375rem;
   }
 }

@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import './Sidebar.css'
 
-function Sidebar({ collapsed, onToggle }) {
+function Sidebar({ collapsed, onToggle, isMobile, mobileMenuOpen, onLinkClick }) {
   const { logout, user } = useAuth()
   const navigate = useNavigate()
 
@@ -26,17 +26,25 @@ function Sidebar({ collapsed, onToggle }) {
     }
   }
 
+  const handleLinkClick = () => {
+    if (onLinkClick) {
+      onLinkClick()
+    }
+  }
+
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${isMobile ? 'mobile' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
-        <h2>{collapsed ? 'SA' : 'Sistema de Almacén'}</h2>
-        <button 
-          className="toggle-btn" 
-          onClick={onToggle}
-          title={collapsed ? 'Expandir menú' : 'Contraer menú'}
-        >
-          {collapsed ? '▶' : '◀'}
-        </button>
+        <h2>{collapsed && !isMobile ? 'SA' : 'Sistema de Almacén'}</h2>
+        {!isMobile && (
+          <button 
+            className="toggle-btn" 
+            onClick={onToggle}
+            title={collapsed ? 'Expandir menú' : 'Contraer menú'}
+          >
+            {collapsed ? '▶' : '◀'}
+          </button>
+        )}
       </div>
       
       <nav className="sidebar-nav">
@@ -44,19 +52,20 @@ function Sidebar({ collapsed, onToggle }) {
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={handleLinkClick}
             className={({ isActive }) => 
               `sidebar-link ${isActive ? 'active' : ''}`
             }
-            title={collapsed ? item.label : ''}
+            title={collapsed && !isMobile ? item.label : ''}
           >
             <span className="sidebar-icon">{item.icon}</span>
-            {!collapsed && <span className="sidebar-label">{item.label}</span>}
+            {(!collapsed || isMobile) && <span className="sidebar-label">{item.label}</span>}
           </NavLink>
         ))}
       </nav>
 
       <div className="sidebar-footer">
-        {!collapsed && user && (
+        {(!collapsed || isMobile) && user && (
           <div className="user-info">
             <span className="user-icon">👤</span>
             <div className="user-details">
@@ -71,7 +80,7 @@ function Sidebar({ collapsed, onToggle }) {
           title="Cerrar sesión"
         >
           <span className="logout-icon">🚪</span>
-          {!collapsed && <span>Cerrar Sesión</span>}
+          {(!collapsed || isMobile) && <span>Cerrar Sesión</span>}
         </button>
       </div>
     </aside>

@@ -9,13 +9,42 @@
   overflow-y: auto;
   z-index: 1000;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s ease;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
 }
 
 .sidebar.collapsed {
   width: 70px;
+}
+
+/* ============================================
+   MOBILE DRAWER
+   ============================================ */
+
+.sidebar.mobile {
+  width: 280px; /* Un poco más ancho en móvil para mejor UX */
+  transform: translateX(-100%);
+  z-index: 999;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  left: 0; /* Asegurar que esté pegado a la izquierda */
+}
+
+.sidebar.mobile.mobile-open {
+  transform: translateX(0);
+}
+
+.sidebar.mobile .sidebar-header h2 {
+  font-size: 1.25rem;
+}
+
+.sidebar.mobile .toggle-btn {
+  display: none;
+}
+
+/* Asegurar que en móvil no colapse */
+.sidebar.mobile.collapsed {
+  width: 280px;
 }
 
 .sidebar-header {
@@ -214,48 +243,26 @@
   display: none;
 }
 
+/* ============================================
+   RESPONSIVE - Mobile Specific
+   ============================================ */
+
 @media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
+  /* El sidebar móvil ya tiene sus estilos en .sidebar.mobile */
+  /* No necesitamos sobrescribir nada aquí */
   
-  .sidebar.collapsed {
-    width: 100%;
-  }
-  
-  .sidebar-nav {
-    display: flex;
-    overflow-x: auto;
-    padding: 8px;
-  }
-  
-  .sidebar-link {
-    flex-direction: column;
-    min-width: 80px;
-    text-align: center;
-    padding: 12px 8px;
-    margin: 0 4px;
-  }
-  
-  .toggle-btn {
-    display: none;
+  .sidebar.mobile .user-info {
+    display: flex; /* Siempre mostrar en móvil */
   }
 
-  .sidebar-footer {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .sidebar.mobile .logout-btn span:not(.logout-icon) {
+    display: inline; /* Siempre mostrar texto en móvil */
   }
+}
 
-  .user-info {
-    flex: 1;
-    margin-bottom: 0;
-  }
-
-  .logout-btn {
-    width: auto;
-    flex-shrink: 0;
+@media (max-width: 480px) {
+  .sidebar.mobile {
+    width: 85vw; /* 85% del ancho de pantalla en móviles pequeños */
+    max-width: 320px;
   }
 }
