@@ -7,14 +7,23 @@
 .main-content {
   flex: 1;
   margin-left: 260px;
-  padding: 32px;
+  padding: 16px;
   background-color: #f9fafb;
   min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.layout.sidebar-collapsed .main-content {
+  margin-left: 70px;
 }
 
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    padding: 16px;
+    padding: 12px;
+  }
+  
+  .layout.sidebar-collapsed .main-content {
+    margin-left: 0;
   }
 }

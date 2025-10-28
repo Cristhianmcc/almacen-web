@@ -6,7 +6,7 @@ class ApiResponse {
   constructor() {
     this.client = axios.create({
       baseURL: BASE_URL,
-      timeout: 10000,
+      timeout: 30000, // Aumentado a 30 segundos
       headers: {
         'Content-Type': 'application/json'
       }
@@ -82,23 +82,65 @@ class ApiResponse {
     }
   }
 
+  // Transformar bajas (withdrawals) del backend al frontend
+  _transformWithdrawal(withdrawal) {
+    if (!withdrawal) return null
+    return {
+      id: withdrawal.id,
+      product_id: withdrawal.producto_id,
+      product_code: withdrawal.productos?.codigo_item || 'N/A',
+      product_name: withdrawal.productos?.nombre_item || 'Sin nombre',
+      reason: withdrawal.motivo_baja || 'Sin especificar',
+      quantity: withdrawal.cantidad_baja,
+      date: withdrawal.fecha_baja,
+      user: withdrawal.usuario,
+      observations: withdrawal.observaciones,
+      value_loss: withdrawal.valor_perdida,
+      created_at: withdrawal.created_at
+    }
+  }
+
+  // Transformar sobrantes (surplus) del backend al frontend
+  _transformSurplus(surplus) {
+    if (!surplus) return null
+    return {
+      id: surplus.id,
+      product_id: surplus.producto_id,
+      product_code: surplus.productos?.codigo_item || 'N/A',
+      product_name: surplus.productos?.nombre_item || 'Sin nombre',
+      quantity: surplus.cantidad,
+      date: surplus.fecha_sobrante,
+      shipping_date: surplus.fecha_envio,
+      destination: surplus.destino,
+      shipping_status: surplus.estado_envio,
+      observations: surplus.observaciones,
+      user: surplus.usuario,
+      surplus_reason: surplus.motivo_sobrante,
+      tracking_code: surplus.codigo_tracking,
+      responsible_user: surplus.usuario_responsable,
+      delivery_date: surplus.fecha_entrega,
+      created_at: surplus.created_at
+    }
+  }
+
   // Transformar del frontend al backend
   _transformProductToBackend(product) {
     if (!product) return null
-    return {
+    
+    const backendProduct = {
       codigo_item: product.code,
       nombre_item: product.name,
-      nombre_marca: product.brand,
+      nombre_marca: product.brand || '',
       orden_compra: product.purchase_order || '',
       nombre_medida: product.unit,
-      mayor: product.mayor || 0, // Precio mayorista (no confundir con min_stock)
-      sub_cta: product.sub_account,
-      stock_actual: product.quantity,
-      // stock_minimo: product.min_stock, // TODO: Agregar cuando exista en el backend
-      fecha_ingreso: product.entry_date,
-      fecha_vencimiento: product.expiry_date,
-      estado: product.status || 'activo'
+      mayor: product.mayor ? Number(product.mayor) : 0,
+      sub_cta: product.sub_account || '',
+      stock_actual: Number(product.quantity),
+      fecha_vencimiento: product.expiry_date
     }
+    
+    console.log('[API] Producto transformado para backend:', backendProduct)
+    return backendProduct
   }
 
   async get(endpoint) {
@@ -126,6 +168,16 @@ class ApiResponse {
         responseData = responseData.map(m => this._transformMovement(m))
       }
       
+      // Transformar bajas si el endpoint es /withdrawals
+      if (endpoint.includes('/withdrawals') && Array.isArray(responseData)) {
+        responseData = responseData.map(b => this._transformWithdrawal(b))
+      }
+      
+      // Transformar sobrantes si el endpoint es /surplus
+      if (endpoint.includes('/surplus') && Array.isArray(responseData)) {
+        responseData = responseData.map(s => this._transformSurplus(s))
+      }
+      
       return { success: true, data: responseData }
     } catch (error) {
       return this._handleError(error)
@@ -133,11 +185,12 @@ class ApiResponse {
   }
 
   async post(endpoint, data) {
+    let requestData = data // Declarar fuera del try
     try {
       // Transformar datos de producto antes de enviar
-      let requestData = data
       if (endpoint.includes('/products') && data) {
         requestData = this._transformProductToBackend(data)
+        console.log('[API] Datos transformados para backend:', requestData)
       }
       
       const response = await this.client.post(endpoint, requestData)
@@ -150,14 +203,19 @@ class ApiResponse {
       
       return { success: true, data: responseData }
     } catch (error) {
+      console.error('[API] POST Error:', {
+        endpoint,
+        requestData,
+        error: error.response?.data || error.message
+      })
       return this._handleError(error)
     }
   }
 
   async put(endpoint, data) {
+    let requestData = data // Declarar fuera del try
     try {
       // Transformar datos de producto antes de enviar
-      let requestData = data
       if (endpoint.includes('/products') && data) {
         requestData = this._transformProductToBackend(data)
       }

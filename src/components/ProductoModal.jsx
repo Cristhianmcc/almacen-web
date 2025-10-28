@@ -8,13 +8,10 @@ function ProductoModal({ product, onSave, onClose, loading }) {
     brand: '',
     purchase_order: '',
     unit: 'Unidad',
-    mayor: 0,
+    mayor: '',
     sub_account: '',
-    quantity: 0,
-    min_stock: 0,
-    entry_date: new Date().toISOString().split('T')[0],
-    expiry_date: '',
-    status: 'activo'
+    quantity: '',
+    expiry_date: new Date().toISOString().split('T')[0]
   })
 
   useEffect(() => {
@@ -25,35 +22,61 @@ function ProductoModal({ product, onSave, onClose, loading }) {
         brand: product.brand || '',
         purchase_order: product.purchase_order || '',
         unit: product.unit || 'Unidad',
-        mayor: product.mayor || 0,
+        mayor: product.mayor || '',
         sub_account: product.sub_account || '',
-        quantity: product.quantity || 0,
-        min_stock: product.min_stock || 0,
-        entry_date: product.entry_date || new Date().toISOString().split('T')[0],
-        expiry_date: product.expiry_date || '',
-        status: product.status || 'activo'
+        quantity: product.quantity || '',
+        expiry_date: product.expiry_date || new Date().toISOString().split('T')[0]
       })
     }
   }, [product])
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    const numericFields = ['quantity', 'min_stock', 'mayor']
     setFormData(prev => ({
       ...prev,
-      [name]: numericFields.includes(name) ? Number(value) : value
+      [name]: value
     }))
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     
-    if (!formData.name.trim()) {
-      alert('El nombre es obligatorio')
+    // Validaciones básicas (solo campos obligatorios del desktop)
+    if (!formData.code?.trim()) {
+      alert('❌ El código es obligatorio')
       return
     }
-
-    onSave(formData)
+    
+    if (!formData.name?.trim()) {
+      alert('❌ El nombre es obligatorio')
+      return
+    }
+    
+    if (!formData.unit?.trim()) {
+      alert('❌ La medida es obligatoria')
+      return
+    }
+    
+    if (!formData.quantity || formData.quantity === '') {
+      alert('❌ El stock inicial es obligatorio')
+      return
+    }
+    
+    // Preparar datos exactamente como el desktop
+    const cleanData = {
+      code: formData.code.trim(),
+      name: formData.name.trim(),
+      brand: formData.brand?.trim() || '',
+      purchase_order: formData.purchase_order?.trim() || '',
+      unit: formData.unit.trim(),
+      mayor: formData.mayor ? Number(formData.mayor) : 0,
+      sub_account: formData.sub_account?.trim() || '',
+      quantity: Number(formData.quantity),
+      expiry_date: formData.expiry_date
+    }
+    
+    console.log('[ProductoModal] Datos a enviar:', cleanData)
+    onSave(cleanData)
   }
 
   return (
@@ -117,31 +140,32 @@ function ProductoModal({ product, onSave, onClose, loading }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Unidad *</label>
+              <label>Medida *</label>
               <input
                 type="text"
                 name="unit"
                 value={formData.unit}
                 onChange={handleChange}
                 required
-                placeholder="Ej: Unidad, Caja, Paquete"
+                placeholder="Ej: Unidad"
               />
             </div>
 
             <div className="form-group">
               <label>Mayor</label>
               <input
-                type="number"
+                type="text"
                 name="mayor"
                 value={formData.mayor}
                 onChange={handleChange}
-                min="0"
-                step="0.01"
+                placeholder="Ej: 1301"
               />
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-group">
-              <label>Sub Cuenta</label>
+              <label>Subcuenta</label>
               <input
                 type="text"
                 name="sub_account"
@@ -150,11 +174,9 @@ function ProductoModal({ product, onSave, onClose, loading }) {
                 placeholder="SUB-XXX"
               />
             </div>
-          </div>
 
-          <div className="form-row">
             <div className="form-group">
-              <label>Stock Actual *</label>
+              <label>Stock inicial *</label>
               <input
                 type="number"
                 name="quantity"
@@ -162,27 +184,20 @@ function ProductoModal({ product, onSave, onClose, loading }) {
                 onChange={handleChange}
                 required
                 min="0"
+                placeholder="Cantidad inicial"
               />
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-group">
-              <label>Fecha Ingreso *</label>
-              <input
-                type="date"
-                name="entry_date"
-                value={formData.entry_date}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Fecha Vencimiento</label>
+              <label>Fecha vencimiento *</label>
               <input
                 type="date"
                 name="expiry_date"
                 value={formData.expiry_date}
                 onChange={handleChange}
+                required
               />
             </div>
           </div>

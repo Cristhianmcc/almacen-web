@@ -1,32 +1,33 @@
 ﻿.productos-page {
-  max-width: 1400px;
+  max-width: 100%;
+  padding: 0.5rem;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 .page-header h1 {
   margin: 0;
   color: #111827;
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 
 .search-bar {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .search-input {
   width: 100%;
-  max-width: 400px;
-  padding: 12px 16px;
-  font-size: 1rem;
+  max-width: 350px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   background: white;
@@ -60,30 +61,48 @@
 .table-container table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px;
+  min-width: 1100px;
+  font-size: 0.75rem;
 }
 
 .table-container thead {
-  background-color: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  background-color: #10b981;
+  border-bottom: 2px solid #059669;
 }
 
 .table-container th {
-  padding: 14px 16px;
+  padding: 8px 6px;
   text-align: left;
   font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
+  color: white;
+  font-size: 0.688rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
+/* Anchos específicos para cada columna - más compactos */
+.table-container th:nth-child(1) { width: 80px; }  /* Código */
+.table-container th:nth-child(2) { width: 130px; } /* Nombre */
+.table-container th:nth-child(3) { width: 90px; }  /* Marca */
+.table-container th:nth-child(4) { width: 100px; } /* Orden Comp */
+.table-container th:nth-child(5) { width: 65px; }  /* Medida */
+.table-container th:nth-child(6) { width: 60px; }  /* Mayor */
+.table-container th:nth-child(7) { width: 100px; } /* Subcuenta */
+.table-container th:nth-child(8) { width: 55px; }  /* Stock */
+.table-container th:nth-child(9) { width: 90px; }  /* F. Ingreso */
+.table-container th:nth-child(10) { width: 90px; } /* F. Vencimiento */
+.table-container th:nth-child(11) { width: 70px; }  /* Estado */
+.table-container th:nth-child(12) { width: 85px; }  /* Acciones */
+
 .table-container td {
-  padding: 14px 16px;
+  padding: 8px 6px;
   border-bottom: 1px solid #e5e7eb;
   color: #111827;
-  font-size: 0.938rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .table-container tbody tr:hover {
@@ -97,6 +116,9 @@
 .product-name {
   font-weight: 500;
   color: #111827;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .quantity-low {
@@ -104,14 +126,19 @@
   font-weight: 600;
 }
 
+.expiry-warning {
+  color: #d97706;
+  font-weight: 500;
+}
+
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.625rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.02em;
 }
 
 .badge-success {
@@ -124,39 +151,50 @@
   color: #92400e;
 }
 
-.table-actions {
+.action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
+  justify-content: center;
 }
 
-.btn-icon {
-  padding: 8px;
+.btn-sm {
+  padding: 5px 8px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 1rem;
+  font-size: 0.813rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
-  height: 36px;
+  min-width: 28px;
+  height: 28px;
 }
 
-.btn-edit {
+.btn-primary {
   background-color: #2563eb;
   color: white;
 }
 
-.btn-edit:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: #1e40af;
   transform: scale(1.05);
 }
 
-.btn-delete {
+.btn-danger {
   background-color: #dc2626;
   color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-delete:hover {

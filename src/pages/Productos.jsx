@@ -43,6 +43,8 @@ function Productos() {
   }
 
   const handleSave = async (productData) => {
+    console.log('[Productos] Datos del formulario:', productData)
+    
     const method = editingProduct ? 'PUT' : 'POST'
     const endpoint = editingProduct 
       ? `/products/${editingProduct.id}` 
@@ -51,11 +53,14 @@ function Productos() {
     const result = await mutate(method, endpoint, productData)
     
     if (result.success) {
-      alert(editingProduct ? 'Producto actualizado' : 'Producto creado')
+      alert(editingProduct ? '✅ Producto actualizado correctamente' : '✅ Producto creado correctamente')
       setShowModal(false)
+      setEditingProduct(null)
       refetch()
     } else {
-      alert(`Error: ${result.error}`)
+      console.error('[Productos] Error al guardar:', result)
+      const errorMsg = result.error || 'Error desconocido'
+      alert(`❌ Error al guardar el producto:\n\n${errorMsg}\n\nRevisa la consola para más detalles.`)
     }
   }
 
@@ -95,10 +100,13 @@ function Productos() {
                 <th>Código</th>
                 <th>Nombre</th>
                 <th>Marca</th>
-                <th>Stock Actual</th>
+                <th>Orden Comp</th>
+                <th>Medida</th>
                 <th>Mayor</th>
-                <th>Unidad</th>
-                <th>Fecha Venc.</th>
+                <th>Subcuenta</th>
+                <th>Stock</th>
+                <th>F. Ingreso</th>
+                <th>F. Vencimiento</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -106,7 +114,7 @@ function Productos() {
             <tbody>
               {filteredProducts?.length === 0 ? (
                 <tr>
-                  <td colSpan="9" className="text-center">
+                  <td colSpan="12" className="text-center">
                     No se encontraron productos
                   </td>
                 </tr>
@@ -120,16 +128,21 @@ function Productos() {
                     <tr key={producto.id || producto._id}>
                       <td>{producto.code || 'N/A'}</td>
                       <td className="product-name">{producto.name || 'Sin nombre'}</td>
-                      <td>{producto.brand || 'N/A'}</td>
+                      <td>{producto.brand || ''}</td>
+                      <td>{producto.purchase_order || ''}</td>
+                      <td>{producto.unit || 'Unidad'}</td>
+                      <td>{producto.mayor || 0}</td>
+                      <td>{producto.sub_account || ''}</td>
                       <td>
                         <span className={isLowStock ? 'quantity-low' : ''}>
                           {producto.quantity || 0}
                         </span>
                       </td>
-                      <td>{producto.mayor || 0}</td>
-                      <td>{producto.unit || 'N/A'}</td>
+                      <td>
+                        {producto.entry_date ? new Date(producto.entry_date).toLocaleDateString('es-ES') : ''}
+                      </td>
                       <td className={isExpiringSoon ? 'expiry-warning' : ''}>
-                        {producto.expiry_date ? new Date(producto.expiry_date).toLocaleDateString() : 'N/A'}
+                        {producto.expiry_date ? new Date(producto.expiry_date).toLocaleDateString('es-ES') : ''}
                       </td>
                       <td>
                         <span className={`badge badge-${isLowStock ? 'warning' : 'success'}`}>

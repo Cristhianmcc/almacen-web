@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import './Sidebar.css'
 
-function Sidebar() {
+function Sidebar({ collapsed, onToggle }) {
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/productos', label: 'Productos', icon: '📦' },
@@ -14,9 +14,16 @@ function Sidebar() {
   ]
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
-        <h2>Sistema de Almacén</h2>
+        <h2>{collapsed ? 'SA' : 'Sistema de Almacén'}</h2>
+        <button 
+          className="toggle-btn" 
+          onClick={onToggle}
+          title={collapsed ? 'Expandir menú' : 'Contraer menú'}
+        >
+          {collapsed ? '▶' : '◀'}
+        </button>
       </div>
       
       <nav className="sidebar-nav">
@@ -27,9 +34,10 @@ function Sidebar() {
             className={({ isActive }) => 
               `sidebar-link ${isActive ? 'active' : ''}`
             }
+            title={collapsed ? item.label : ''}
           >
             <span className="sidebar-icon">{item.icon}</span>
-            <span className="sidebar-label">{item.label}</span>
+            {!collapsed && <span className="sidebar-label">{item.label}</span>}
           </NavLink>
         ))}
       </nav>

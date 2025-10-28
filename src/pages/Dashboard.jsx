@@ -4,15 +4,14 @@ import './Dashboard.css'
 function Dashboard() {
   const { data: productos, loading: loadingProductos } = useApi('/products')
   const { data: movimientos, loading: loadingMovimientos } = useApi('/movements')
-  // Temporalmente comentados hasta confirmar endpoints
-  // const { data: bajas, loading: loadingBajas } = useApi('/wastage')
-  // const { data: sobrantes, loading: loadingSobrantes } = useApi('/surplus')
+  const { data: bajas, loading: loadingBajas } = useApi('/withdrawals')
+  const { data: sobrantes, loading: loadingSobrantes } = useApi('/surplus')
 
   // Asegurar que todos sean arrays
   const productosArray = Array.isArray(productos) ? productos : []
   const movimientosArray = Array.isArray(movimientos) ? movimientos : []
-  const bajasArray = [] // Array.isArray(bajas) ? bajas : []
-  const sobrantesArray = [] // Array.isArray(sobrantes) ? sobrantes : []
+  const bajasArray = Array.isArray(bajas) ? bajas : []
+  const sobrantesArray = Array.isArray(sobrantes) ? sobrantes : []
 
   const stats = [
     {
@@ -34,14 +33,14 @@ function Dashboard() {
       value: bajasArray.length,
       icon: '❌',
       color: 'danger',
-      loading: false // loadingBajas
+      loading: loadingBajas
     },
     {
       title: 'Sobrantes',
       value: sobrantesArray.length,
       icon: '➕',
       color: 'success',
-      loading: false // loadingSobrantes
+      loading: loadingSobrantes
     },
     {
       title: 'Alertas',
