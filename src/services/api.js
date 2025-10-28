@@ -50,7 +50,9 @@ class ApiResponse {
       mayor: product.mayor,
       sub_account: product.sub_cta,
       quantity: product.stock_actual,
-      min_stock: product.mayor, // Usar mayor como stock mínimo
+      // FIX: El backend no tiene campo stock_minimo
+      // Usar stock_minimo si existe, sino usar un valor por defecto razonable
+      min_stock: product.stock_minimo || 50, // Stock mínimo por defecto: 50 unidades
       entry_date: product.fecha_ingreso,
       expiry_date: product.fecha_vencimiento,
       status: product.estado,
@@ -89,9 +91,10 @@ class ApiResponse {
       nombre_marca: product.brand,
       orden_compra: product.purchase_order || '',
       nombre_medida: product.unit,
-      mayor: product.mayor || product.min_stock,
+      mayor: product.mayor || 0, // Precio mayorista (no confundir con min_stock)
       sub_cta: product.sub_account,
       stock_actual: product.quantity,
+      // stock_minimo: product.min_stock, // TODO: Agregar cuando exista en el backend
       fecha_ingreso: product.entry_date,
       fecha_vencimiento: product.expiry_date,
       estado: product.status || 'activo'
