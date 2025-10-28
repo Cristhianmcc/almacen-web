@@ -2,6 +2,8 @@
 
 > **✅ ACTUALIZACIÓN OCTUBRE 2025:** Sistema de productos completamente funcional con integración a Supabase. Los 10 productos existentes se cargan correctamente. Transformación bidireccional de datos implementada. Ver `CAMBIOS_REALIZADOS.md` para detalles completos.
 
+> **🐛 FIX 28/10/2025:** Corregido bug de registro de movimientos. Los campos no se transformaban correctamente al formato del backend. Ahora las entradas y salidas funcionan perfectamente. Ver `FIX-MOVIMIENTOS.md` para detalles.
+
 > **🐛 FIX 27/10/2025:** Corregido bug de alertas de stock. El campo `mayor` (precio mayorista) se usaba incorrectamente como stock mínimo. Ahora usa valor por defecto de 50 unidades. Ver `FIX-STOCK-MINIMO.md` para la solución definitiva.
 
 Versión web del sistema de gestión de almacén, construido con **React** y **JavaScript**. Consume la API REST del backend desplegado en Render.

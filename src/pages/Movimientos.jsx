@@ -40,21 +40,29 @@ function Movimientos() {
       return
     }
 
+    console.log('[Movimientos] Datos del formulario:', formData)
+    console.log('[Movimientos] Tipo de movimiento:', tipoMovimiento)
+
     const endpoint = tipoMovimiento === 'entrada' ? '/movements/entry' : '/movements/exit'
     const data = {
       ...formData,
       type: tipoMovimiento
     }
 
-    // Remove expiry_date if not entrada
-    if (tipoMovimiento !== 'entrada') {
+    // Remove expiry_date if not entrada or if empty
+    if (tipoMovimiento !== 'entrada' || !data.expiry_date) {
       delete data.expiry_date
     }
 
+    console.log('[Movimientos] Datos a enviar:', data)
+    console.log('[Movimientos] Endpoint:', endpoint)
+
     const result = await mutate('POST', endpoint, data)
     
+    console.log('[Movimientos] Resultado:', result)
+    
     if (result.success) {
-      alert(`${tipoMovimiento === 'entrada' ? 'Entrada' : 'Salida'} registrada correctamente`)
+      alert(`✅ ${tipoMovimiento === 'entrada' ? 'Entrada' : 'Salida'} registrada correctamente`)
       setFormData({
         product_id: '',
         quantity: 0,
@@ -63,7 +71,8 @@ function Movimientos() {
       })
       refetch()
     } else {
-      alert(`Error: ${result.error}`)
+      console.error('[Movimientos] Error detallado:', result)
+      alert(`❌ Error al registrar ${tipoMovimiento}:\n\n${result.error}\n\nRevisa la consola (F12) para más detalles.`)
     }
   }
 

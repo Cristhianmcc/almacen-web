@@ -143,6 +143,30 @@ class ApiResponse {
     return backendProduct
   }
 
+  // Transformar movimientos del frontend al backend
+  _transformMovementToBackend(movement) {
+    if (!movement) return null
+    
+    console.log('[API] Datos originales del movimiento:', movement)
+    
+    // Estructura base - IGUAL para entradas y salidas
+    const backendMovement = {
+      producto_id: Number(movement.product_id),
+      cantidad: Number(movement.quantity),
+      usuario: 'admin', // Campo requerido
+      observaciones: movement.reason && movement.reason.trim() !== '' ? movement.reason.trim() : '' // Siempre incluir
+    }
+    
+    // NOTA: fecha_movimiento NO se envía - el backend lo maneja automáticamente
+    // El error era: "fecha_movimiento" is not allowed
+    
+    console.log('[API] Movimiento transformado final:', JSON.stringify(backendMovement, null, 2))
+    console.log('[API] Tipo:', movement.type)
+    console.log('[API] Campos enviados:', Object.keys(backendMovement))
+    
+    return backendMovement
+  }
+
   async get(endpoint) {
     try {
       const response = await this.client.get(endpoint)
@@ -187,26 +211,46 @@ class ApiResponse {
   async post(endpoint, data) {
     let requestData = data // Declarar fuera del try
     try {
+      console.log('[API] POST Request:', { endpoint, originalData: data })
+      
       // Transformar datos de producto antes de enviar
       if (endpoint.includes('/products') && data) {
         requestData = this._transformProductToBackend(data)
         console.log('[API] Datos transformados para backend:', requestData)
       }
       
+      // Transformar datos de movimiento antes de enviar
+      if (endpoint.includes('/movements') && data) {
+        requestData = this._transformMovementToBackend(data)
+        console.log('[API] Movimiento transformado para backend:', requestData)
+      }
+      
+      console.log('[API] Enviando al servidor:', { endpoint, requestData })
+      
       const response = await this.client.post(endpoint, requestData)
       let responseData = response.data?.data || response.data
+      
+      console.log('[API] Respuesta recibida:', responseData)
       
       // Transformar respuesta si es un producto
       if (endpoint.includes('/products') && responseData && !Array.isArray(responseData)) {
         responseData = this._transformProduct(responseData)
       }
       
+      // Transformar respuesta si es un movimiento
+      if (endpoint.includes('/movements') && responseData && !Array.isArray(responseData)) {
+        responseData = this._transformMovement(responseData)
+      }
+      
       return { success: true, data: responseData }
     } catch (error) {
-      console.error('[API] POST Error:', {
+      console.error('[API] POST Error completo:', {
         endpoint,
         requestData,
-        error: error.response?.data || error.message
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        errorData: error.response?.data,
+        errorMessage: error.message
       })
       return this._handleError(error)
     }
