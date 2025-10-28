@@ -264,29 +264,207 @@
   color: #1e40af;
 }
 
-/* Responsive */
+/* Responsive Design - Mobile First */
+
+/* Tablet (< 1024px) */
+@media (max-width: 1024px) {
+  .reportes-page {
+    padding: 1.5rem;
+  }
+  
+  .filtros-fecha {
+    padding: 1.25rem;
+  }
+  
+  .tabla-reporte {
+    padding: 1.25rem;
+  }
+  
+  .tabla-reporte table {
+    font-size: 0.813rem;
+  }
+}
+
+/* Mobile (< 768px) */
 @media (max-width: 768px) {
   .reportes-page {
     padding: 1rem;
+  }
+  
+  .reportes-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .filtros-fecha {
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .filtros-fecha h3 {
+    font-size: 1.063rem;
+    margin-bottom: 0.875rem;
   }
 
   .filtros-controls {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.875rem;
+  }
+  
+  .filtro-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.375rem;
+  }
+  
+  .filtro-item label {
+    font-size: 0.813rem;
+  }
+  
+  .date-input {
+    font-size: 16px; /* Prevent iOS zoom */
+    padding: 11px 12px;
+    min-height: 44px;
+  }
+  
+  .btn-aplicar, .btn-limpiar {
+    min-height: 44px;
+    padding: 11px 1.125rem;
+    font-size: 0.813rem;
   }
 
   .tipo-reporte-btns,
   .exportacion-btns {
     flex-direction: column;
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .btn-reporte {
+    min-height: 44px;
+    padding: 11px 1rem;
+    font-size: 0.938rem;
+  }
+  
+  .btn-pdf, .btn-excel, .btn-imprimir {
+    min-height: 44px;
+    padding: 11px 1.25rem;
+    font-size: 0.875rem;
+    gap: 0.375rem;
   }
 
   .tabla-reporte {
-    font-size: 0.8125rem;
+    padding: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tabla-reporte table {
+    min-width: 700px;
+    font-size: 0.75rem;
   }
 
   .tabla-reporte th,
   .tabla-reporte td {
-    padding: 0.5rem;
+    padding: 0.625rem 0.5rem;
+  }
+  
+  .tabla-reporte th {
+    font-size: 0.75rem;
+  }
+  
+  .tipo-badge {
+    font-size: 0.688rem;
+    padding: 0.188rem 0.625rem;
+  }
+}
+
+/* Small mobile (< 480px) */
+@media (max-width: 480px) {
+  .reportes-page {
+    padding: 0.875rem;
+  }
+  
+  .reportes-header h1 {
+    font-size: 1.375rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .filtros-fecha {
+    padding: 0.875rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+  }
+  
+  .filtros-fecha h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .filtros-controls {
+    gap: 0.75rem;
+  }
+  
+  .filtro-item {
+    gap: 0.313rem;
+  }
+  
+  .filtro-item label {
+    font-size: 0.75rem;
+  }
+  
+  .date-input {
+    padding: 10px 11px;
+    border-radius: 5px;
+  }
+  
+  .btn-aplicar, .btn-limpiar {
+    padding: 10px 1rem;
+    font-size: 0.75rem;
+    border-radius: 5px;
+  }
+  
+  .tipo-reporte-btns,
+  .exportacion-btns {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .btn-reporte {
+    padding: 10px 0.875rem;
+    font-size: 0.875rem;
+    border-radius: 10px;
+  }
+  
+  .btn-pdf, .btn-excel, .btn-imprimir {
+    padding: 10px 1rem;
+    font-size: 0.813rem;
+    border-radius: 7px;
+  }
+  
+  .tabla-reporte {
+    padding: 0.875rem;
+    border-radius: 10px;
+  }
+  
+  .tabla-reporte table {
+    min-width: 650px;
+    font-size: 0.688rem;
+  }
+  
+  .tabla-reporte th,
+  .tabla-reporte td {
+    padding: 0.5rem 0.375rem;
+  }
+  
+  .tabla-reporte th {
+    font-size: 0.688rem;
+  }
+  
+  .tipo-badge {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
   }
 }
 

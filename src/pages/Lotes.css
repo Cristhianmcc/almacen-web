@@ -477,13 +477,27 @@
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */
+/* ============================================
+   RESPONSIVE DESIGN - Mobile First
+   ============================================ */
 
+/* Tablet (< 1024px) */
 @media (max-width: 1024px) {
   .lotes-stats {
     grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  
+  .stat-card {
+    padding: 18px;
+  }
+  
+  .lotes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
+/* Mobile (< 768px) */
 @media (max-width: 768px) {
   .lotes-page h1 {
     font-size: 1.5rem;
@@ -505,9 +519,18 @@
   .alertas-lotes {
     padding: 16px;
   }
+  
+  .alertas-lotes h2 {
+    font-size: 1.063rem;
+  }
 
   .alerta-lote {
     flex-wrap: wrap;
+    padding: 10px 14px;
+  }
+  
+  .alerta-mensaje {
+    font-size: 0.875rem;
   }
 
   .lotes-header {
@@ -523,16 +546,99 @@
     padding: 16px;
   }
 
+  .filter-section {
+    padding: 16px;
+  }
+  
   .filter-section select {
     max-width: 100%;
+    font-size: 16px; /* Prevent iOS zoom */
+    padding: 11px 14px;
+    min-height: 44px;
+  }
+  
+  .btn-historial {
+    min-height: 44px;
+    padding: 11px 14px;
+    font-size: 0.813rem;
+  }
+  
+  /* Modal bottom sheet style */
+  .modal-overlay {
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 85vh;
+    animation: slideUpMobile 0.3s ease-out;
+  }
+  
+  @keyframes slideUpMobile {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.125rem;
+  }
+  
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    font-size: 1.375rem;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .historial-info {
+    padding: 14px;
+  }
+  
+  .historial-info p {
+    font-size: 0.875rem;
+  }
+
+  .historial-table th,
+  .historial-table td {
+    padding: 10px 12px;
+    font-size: 0.875rem;
+  }
+  
+  .historial-table th {
+    font-size: 0.813rem;
+  }
+  
+  .modal-footer {
+    padding: 14px 20px;
+  }
+  
+  .btn-secondary {
+    min-height: 44px;
+    padding: 11px 18px;
+    font-size: 0.875rem;
   }
 }
 
+/* Small mobile (< 480px) */
 @media (max-width: 480px) {
   .lotes-page h1 {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
   }
 
+  .stat-card {
+    padding: 14px;
+    border-radius: 8px;
+  }
+  
   .stat-card h3 {
     font-size: 0.75rem;
   }
@@ -541,26 +647,129 @@
     font-size: 1.5rem;
   }
 
+  .alertas-lotes {
+    padding: 14px;
+    border-radius: 8px;
+  }
+  
   .alertas-lotes h2 {
     font-size: 1rem;
   }
 
+  .alerta-lote {
+    padding: 9px 12px;
+    border-radius: 7px;
+  }
+  
+  .alerta-tipo {
+    font-size: 1.125rem;
+  }
+  
   .alerta-mensaje {
-    font-size: 0.875rem;
+    font-size: 0.813rem;
   }
-}
-
-@media (max-width: 480px) {
-  .lotes-page h1 {
-    font-size: 1.25rem;
+  
+  .alerta-cantidad {
+    font-size: 0.813rem;
+    padding: 3px 10px;
   }
-
+  
+  .lotes-header {
+    padding: 14px;
+  }
+  
+  .lotes-header h2 {
+    font-size: 1.125rem;
+  }
+  
+  .filter-section {
+    padding: 14px;
+    border-radius: 10px;
+  }
+  
+  .filter-section select {
+    padding: 10px 12px;
+    border-radius: 7px;
+  }
+  
+  .lotes-grid {
+    gap: 12px;
+  }
+  
+  .lote-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  
   .lote-header h3 {
     font-size: 1rem;
   }
-
+  
   .lote-info {
-    font-size: 0.85rem;
+    font-size: 0.813rem;
+  }
+  
+  .btn-historial {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    border-radius: 5px;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+  }
+  
+  .modal-header {
+    padding: 14px 16px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.063rem;
+    gap: 8px;
+  }
+  
+  .modal-close {
+    width: 30px;
+    height: 30px;
+    font-size: 1.25rem;
+  }
+  
+  .modal-body {
+    padding: 16px;
+  }
+  
+  .historial-info {
+    padding: 12px;
+    border-radius: 7px;
+  }
+  
+  .historial-info p {
+    font-size: 0.813rem;
+  }
+  
+  .historial-table th,
+  .historial-table td {
+    padding: 9px 10px;
+    font-size: 0.813rem;
+  }
+  
+  .historial-table th {
+    font-size: 0.75rem;
+  }
+  
+  .historial-table .text-center {
+    padding: 20px;
+    font-size: 0.875rem;
+  }
+  
+  .modal-footer {
+    padding: 12px 16px;
+  }
+  
+  .btn-secondary {
+    padding: 10px 16px;
+    font-size: 0.813rem;
+    border-radius: 5px;
   }
 }
 
@@ -787,27 +996,3 @@
 .btn-secondary:active {
   transform: translateY(0);
 }
-
-/* Responsive para modal */
-@media (max-width: 768px) {
-  .modal-content {
-    width: 95%;
-    max-height: 90vh;
-  }
-
-  .modal-header h2 {
-    font-size: 1.125rem;
-  }
-
-  .historial-table th,
-  .historial-table td {
-    padding: 10px 12px;
-    font-size: 0.875rem;
-  }
-
-  .btn-historial {
-    padding: 6px 12px;
-    font-size: 0.8125rem;
-  }
-}
-
