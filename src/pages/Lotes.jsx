@@ -4,18 +4,29 @@ import { FEFOService, LoteFEFO } from '../utils/fefo'
 import './Lotes.css'
 
 function Lotes() {
-  const { data: productos } = useApi('/products')
-  // const { data: lotes, loading, refetch } = useApi('/batches')
-  // Temporalmente deshabilitado hasta confirmar endpoint
-  const lotes = []
-  const loading = false
-  const refetch = () => {}
+  const { data: productos, loading } = useApi('/products')
   
   const [productoSeleccionado, setProductoSeleccionado] = useState('')
 
   // Asegurar que sean arrays
   const productosArray = Array.isArray(productos) ? productos : []
-  const lotesArray = Array.isArray(lotes) ? lotes : []
+  
+  // En este sistema, cada producto con fecha de vencimiento ES un lote
+  // No hay tabla separada de lotes
+  const lotes = productosArray
+    .filter(p => p.expiry_date && p.quantity > 0) // Solo productos con fecha de vencimiento y stock
+    .map(p => ({
+      id: p.id,
+      product_id: p.id,
+      product_name: p.name,
+      product_code: p.code,
+      quantity: p.quantity,
+      expiry_date: p.expiry_date,
+      entry_date: p.entry_date,
+      created_at: p.created_at || p.entry_date
+    }))
+
+  const lotesArray = lotes
 
   const lotesFiltrados = productoSeleccionado
     ? lotesArray.filter(l => l.product_id === parseInt(productoSeleccionado))
@@ -93,9 +104,13 @@ function Lotes() {
               onChange={(e) => setProductoSeleccionado(e.target.value)}
             >
               <option value="">Todos los productos</option>
-              {productosArray.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
+              {productosArray
+                .filter(p => p.expiry_date) // Solo productos con fecha de vencimiento
+                .map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} {p.code ? `(${p.code})` : ''}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -128,16 +143,22 @@ function Lotes() {
                   </tr>
                 ) : (
                   lotesFiltrados.map((lote) => {
-                    const loteObj = new LoteFEFO(lote.id, lote.expiry_date, lote.quantity, lote.created_at)
+                    const loteObj = new LoteFEFO(lote.id, lote.expiry_date, lote.quantity, lote.entry_date || lote.created_at)
                     const diasRestantes = loteObj.diasParaVencer()
                     const estaVencido = loteObj.estaVencido()
 
                     return (
                       <tr key={lote.id} className={estaVencido ? 'lote-vencido' : ''}>
-                        <td>{lote.batch_code}</td>
-                        <td>{lote.product_name}</td>
+                        <td>LOTE-{lote.id}</td>
+                        <td>
+                          <div>
+                            <strong>{lote.product_name}</strong>
+                            <br />
+                            <small>Código: {lote.product_code}</small>
+                          </div>
+                        </td>
                         <td>{lote.quantity}</td>
-                        <td>{new Date(lote.created_at).toLocaleDateString()}</td>
+                        <td>{lote.entry_date ? new Date(lote.entry_date).toLocaleDateString() : 'N/A'}</td>
                         <td>{new Date(lote.expiry_date).toLocaleDateString()}</td>
                         <td className={diasRestantes <= 7 ? 'dias-critico' : diasRestantes <= 30 ? 'dias-warning' : ''}>
                           {estaVencido ? 'VENCIDO' : `${diasRestantes} días`}
