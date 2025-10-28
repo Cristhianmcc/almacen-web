@@ -1,0 +1,112 @@
+﻿.lotes-page {
+  max-width: 1400px;
+}
+
+.lotes-page h1 {
+  color: #111827;
+  margin-bottom: 32px;
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.lotes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.filter-section select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #111827;
+  background: white;
+}
+
+.lotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.lote-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.lote-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.lote-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lote-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.lote-id {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+
+.lote-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lote-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.938rem;
+}
+
+.lote-info-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.lote-info-value {
+  color: #111827;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 64px 20px;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .lotes-grid {
+    grid-template-columns: 1fr;
+  }
+}
