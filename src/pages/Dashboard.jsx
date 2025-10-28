@@ -6,12 +6,14 @@ function Dashboard() {
   const { data: movimientos, loading: loadingMovimientos } = useApi('/movements')
   const { data: bajas, loading: loadingBajas } = useApi('/withdrawals')
   const { data: sobrantes, loading: loadingSobrantes } = useApi('/surplus')
+  const { data: alertas, loading: loadingAlertas } = useApi('/alerts') // Nuevo: obtener alertas del backend
 
   // Asegurar que todos sean arrays
   const productosArray = Array.isArray(productos) ? productos : []
   const movimientosArray = Array.isArray(movimientos) ? movimientos : []
   const bajasArray = Array.isArray(bajas) ? bajas : []
   const sobrantesArray = Array.isArray(sobrantes) ? sobrantes : []
+  const alertasArray = Array.isArray(alertas) ? alertas : [] // Nuevo
 
   const stats = [
     {
@@ -44,10 +46,10 @@ function Dashboard() {
     },
     {
       title: 'Alertas',
-      value: productosArray.filter(p => (p?.quantity || 0) <= (p?.min_stock || 0)).length,
+      value: alertasArray.length, // Usar alertas del backend
       icon: '⚠️',
       color: 'warning',
-      loading: loadingProductos
+      loading: loadingAlertas // Nuevo loading
     }
   ]
 
@@ -74,57 +76,58 @@ function Dashboard() {
       <div className="dashboard-grid">
         <div className="dashboard-card">
           <div className="card-header">
-            <h2>Productos con Stock Bajo</h2>
-            <span className="badge-count">
-              {productosArray.filter(p => (p?.quantity || 0) <= (p?.min_stock || 0)).length}
-            </span>
+            <h2>Alertas de Inventario</h2>
+            <span className="badge-count">{alertasArray.length}</span>
           </div>
-          {loadingProductos ? (
+          {loadingAlertas ? (
             <div className="loading-state">
               <div className="spinner-small"></div>
-              <span>Cargando productos...</span>
+              <span>Cargando alertas...</span>
             </div>
           ) : (
             <div className="alert-list">
-              {productosArray
-                .filter(p => (p?.quantity || 0) <= (p?.min_stock || 0))
+              {alertasArray
                 .slice(0, 5)
-                .map(producto => {
-                  const percentage = ((producto.quantity || 0) / (producto.min_stock || 1)) * 100
+                .map(alerta => {
+                  const producto = alerta.productos || {}
+                  const nivel = alerta.nivel_prioridad?.toLowerCase() || 'media'
+                  const esCritico = nivel === 'alta'
                   return (
-                    <div key={producto.id} className="alert-item-modern">
+                    <div key={alerta.id} className="alert-item-modern">
                       <div className="alert-info">
                         <div className="alert-header-row">
-                          <span className="product-name-alert">{producto.name}</span>
-                          <span className={`status-badge ${percentage === 0 ? 'critical' : 'warning'}`}>
-                            {percentage === 0 ? 'Agotado' : 'Bajo'}
+                          <span className="product-name-alert">
+                            {producto.nombre_item || alerta.nombre_producto || 'Sin nombre'}
+                          </span>
+                          <span className={`status-badge ${esCritico ? 'critical' : 'warning'}`}>
+                            {alerta.tipo_alerta || 'Alerta'}
                           </span>
                         </div>
                         <div className="alert-details">
                           <span className="detail-item">
-                            <span className="detail-label">Stock:</span>
-                            <span className="detail-value">{producto.quantity || 0}</span>
+                            <span className="detail-label">Prioridad:</span>
+                            <span className="detail-value">{alerta.nivel_prioridad || 'Media'}</span>
                           </span>
                           <span className="detail-separator">•</span>
                           <span className="detail-item">
-                            <span className="detail-label">Mínimo:</span>
-                            <span className="detail-value">{producto.min_stock || 0}</span>
+                            <span className="detail-label">Estado:</span>
+                            <span className="detail-value">{alerta.estado_alerta || 'Pendiente'}</span>
                           </span>
                         </div>
                       </div>
                       <div className="progress-bar-container">
                         <div 
-                          className={`progress-bar ${percentage === 0 ? 'critical' : percentage <= 50 ? 'danger' : 'warning'}`}
-                          style={{ width: `${Math.min(percentage, 100)}%` }}
+                          className={`progress-bar ${esCritico ? 'critical' : 'warning'}`}
+                          style={{ width: esCritico ? '100%' : '70%' }}
                         ></div>
                       </div>
                     </div>
                   )
                 })}
-              {productosArray.filter(p => (p?.quantity || 0) <= (p?.min_stock || 0)).length === 0 && (
+              {alertasArray.length === 0 && (
                 <div className="empty-state">
                   <span className="empty-icon">✓</span>
-                  <p>Todos los productos tienen stock adecuado</p>
+                  <p>No hay alertas pendientes</p>
                 </div>
               )}
             </div>

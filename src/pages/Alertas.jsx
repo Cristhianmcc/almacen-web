@@ -2,28 +2,26 @@ import { useApi } from '../hooks/useApi'
 import './Alertas.css'
 
 function Alertas() {
-  const { data: productos, loading } = useApi('/products')
+  // Cambiar de /products a /alerts para usar el sistema de alertas del backend
+  const { data: alertas, loading } = useApi('/alerts')
 
-  // Asegurar que productos sea un array
-  const productosArray = Array.isArray(productos) ? productos : []
-  const alertas = productosArray.filter(p => (p?.quantity || 0) <= (p?.min_stock || 0))
+  // Asegurar que alertas sea un array
+  const alertasArray = Array.isArray(alertas) ? alertas : []
 
-  const getAlertLevel = (producto) => {
-    const quantity = producto?.quantity || 0
-    const minStock = producto?.min_stock || 1
-    const porcentaje = (quantity / minStock) * 100
-    if (porcentaje === 0) return 'critico'
-    if (porcentaje <= 50) return 'alto'
-    return 'medio'
+  const getNivelBadgeClass = (nivel) => {
+    const nivelLower = nivel?.toLowerCase() || 'media'
+    if (nivelLower === 'alta') return 'badge-danger'
+    if (nivelLower === 'media') return 'badge-warning'
+    return 'badge-info'
   }
 
   return (
     <div className="alertas-page">
       <div className="page-header">
-        <h1>Alertas de Stock</h1>
+        <h1>Alertas de Inventario</h1>
         <div className="alert-summary">
-          <span className="alert-count">{alertas.length}</span>
-          <span className="alert-label">productos con stock bajo</span>
+          <span className="alert-count">{alertasArray.length}</span>
+          <span className="alert-label">alertas cargadas</span>
         </div>
       </div>
 
@@ -32,51 +30,61 @@ function Alertas() {
           <div className="spinner"></div>
           <p>Cargando alertas...</p>
         </div>
-      ) : alertas.length === 0 ? (
+      ) : alertasArray.length === 0 ? (
         <div className="alert alert-success">
-          ✅ No hay productos con stock bajo. Todo está en orden.
+          ✅ No hay alertas pendientes. Todo está en orden.
         </div>
       ) : (
-        <div className="alertas-grid">
-          {alertas.map(producto => {
-            const level = getAlertLevel(producto)
-            return (
-              <div key={producto.id || producto._id} className={`alerta-card alerta-${level}`}>
-                <div className="alerta-header">
-                  <span className="alerta-icon">
-                    {level === 'critico' ? '🔴' : level === 'alto' ? '🟠' : '🟡'}
-                  </span>
-                  <h3>{producto.name || 'Sin nombre'}</h3>
-                </div>
-                
-                <div className="alerta-body">
-                  <div className="alerta-stat">
-                    <span className="stat-label">Stock Actual</span>
-                    <span className="stat-value">{producto.quantity || 0}</span>
-                  </div>
-                  
-                  <div className="alerta-stat">
-                    <span className="stat-label">Stock Mínimo</span>
-                    <span className="stat-value">{producto.min_stock || 0}</span>
-                  </div>
-                  
-                  <div className="alerta-stat">
-                    <span className="stat-label">Unidad</span>
-                    <span className="stat-value">{producto.unit || 'N/A'}</span>
-                  </div>
-                </div>
-                
-                <div className="alerta-footer">
-                  <span className={`nivel-badge nivel-${level}`}>
-                    {level === 'critico' ? 'CRÍTICO' : level === 'alto' ? 'ALTO' : 'MEDIO'}
-                  </span>
-                  {producto.code && (
-                    <span className="producto-code">Código: {producto.code}</span>
-                  )}
-                </div>
-              </div>
-            )
-          })}
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Código producto</th>
+                <th>Nombre producto</th>
+                <th>Tipo alerta</th>
+                <th>Descripción</th>
+                <th>Fecha alerta</th>
+                <th>Estado alerta</th>
+                <th>Nivel prioridad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {alertasArray.map(alerta => {
+                const producto = alerta.productos || {}
+                return (
+                  <tr key={alerta.id}>
+                    <td>{producto.codigo_item || alerta.codigo_producto || 'N/A'}</td>
+                    <td className="product-name">
+                      {producto.nombre_item || alerta.nombre_producto || 'Sin nombre'}
+                    </td>
+                    <td>{alerta.tipo_alerta || 'N/A'}</td>
+                    <td className="descripcion">{alerta.descripcion || 'Sin descripción'}</td>
+                    <td>
+                      {alerta.fecha_alerta 
+                        ? new Date(alerta.fecha_alerta).toLocaleString('es-ES', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })
+                        : 'N/A'}
+                    </td>
+                    <td>
+                      <span className="badge badge-secondary">
+                        {alerta.estado_alerta || 'pendiente'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${getNivelBadgeClass(alerta.nivel_prioridad)}`}>
+                        {alerta.nivel_prioridad || 'media'}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

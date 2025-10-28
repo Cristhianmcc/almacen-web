@@ -123,6 +123,24 @@ class ApiResponse {
     }
   }
 
+  // Transformar alertas del backend al frontend
+  _transformAlert(alert) {
+    if (!alert) return null
+    return {
+      id: alert.id,
+      product_id: alert.producto_id,
+      codigo_producto: alert.productos?.codigo_item || alert.codigo_producto || 'N/A',
+      nombre_producto: alert.productos?.nombre_item || alert.nombre_producto || 'Sin nombre',
+      tipo_alerta: alert.tipo_alerta,
+      descripcion: alert.descripcion,
+      fecha_alerta: alert.fecha_alerta,
+      estado_alerta: alert.estado_alerta,
+      nivel_prioridad: alert.nivel_prioridad,
+      productos: alert.productos, // Mantener relación con producto
+      created_at: alert.created_at
+    }
+  }
+
   // Transformar del frontend al backend
   _transformProductToBackend(product) {
     if (!product) return null
@@ -200,6 +218,11 @@ class ApiResponse {
       // Transformar sobrantes si el endpoint es /surplus
       if (endpoint.includes('/surplus') && Array.isArray(responseData)) {
         responseData = responseData.map(s => this._transformSurplus(s))
+      }
+      
+      // Transformar alertas si el endpoint es /alerts
+      if (endpoint.includes('/alerts') && Array.isArray(responseData)) {
+        responseData = responseData.map(a => this._transformAlert(a))
       }
       
       return { success: true, data: responseData }
