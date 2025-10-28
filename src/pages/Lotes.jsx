@@ -5,8 +5,11 @@ import './Lotes.css'
 
 function Lotes() {
   const { data: productos, loading } = useApi('/products')
+  const { data: movimientos } = useApi('/movements')
   
   const [productoSeleccionado, setProductoSeleccionado] = useState('')
+  const [modalHistorial, setModalHistorial] = useState(false)
+  const [loteSeleccionado, setLoteSeleccionado] = useState(null)
 
   // Asegurar que sean arrays
   const productosArray = Array.isArray(productos) ? productos : []
@@ -39,7 +42,18 @@ function Lotes() {
       new LoteFEFO(l.id, l.expiry_date, l.quantity, l.created_at)
     )
 
-    return FEFOService.obtenerResumenLotes(lotesObjetos)
+    // Debug: Ver días para vencer de cada lote
+    console.log('=== DEBUG LOTES ===')
+    lotesObjetos.forEach(l => {
+      const dias = l.diasParaVencer()
+      const estado = l.estaVencido() ? '❌ VENCIDO' : dias <= 30 ? '⚠️ PROXIMO' : '✅ ACTIVO'
+      console.log(`Lote ${l.loteId}: ${dias} días - ${estado}`)
+    })
+
+    const resumen = FEFOService.obtenerResumenLotes(lotesObjetos)
+    console.log('Resumen:', resumen)
+    
+    return resumen
   }
 
   const obtenerAlertas = () => {
@@ -54,6 +68,47 @@ function Lotes() {
 
   const estadisticas = calcularEstadisticas()
   const alertas = obtenerAlertas()
+
+  const abrirHistorial = (lote) => {
+    setLoteSeleccionado(lote)
+    setModalHistorial(true)
+  }
+
+  const cerrarHistorial = () => {
+    setModalHistorial(false)
+    setLoteSeleccionado(null)
+  }
+
+  const obtenerHistorialLote = () => {
+    if (!loteSeleccionado || !movimientos) return []
+    
+    const movimientosArray = Array.isArray(movimientos) ? movimientos : []
+    
+    // Filtrar movimientos del producto seleccionado
+    return movimientosArray
+      .filter(m => m.product_id === loteSeleccionado.product_id)
+      .map(m => {
+        // Construir las observaciones completas
+        let observacionesCompletas = ''
+        
+        if (m.type === 'entrada') {
+          observacionesCompletas = 'Entrada de lote - ' + (m.observations || m.reason || 'Entrada de producto')
+        } else if (m.type === 'salida') {
+          observacionesCompletas = 'Salida FEFO - ' + (m.observations || m.reason || 'Salida de producto')
+        } else {
+          // Otros tipos de movimiento
+          observacionesCompletas = (m.observations || m.reason || 'Sin observaciones')
+        }
+        
+        return {
+          fecha: m.date || m.movement_date || m.created_at,
+          cantidad: m.quantity,
+          tipo: m.type,
+          observaciones: observacionesCompletas
+        }
+      })
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)) // Más reciente primero
+  }
 
   return (
     <div className="lotes-page">
@@ -132,12 +187,13 @@ function Lotes() {
                   <th>Fecha Vencimiento</th>
                   <th>Días para Vencer</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {lotesFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center">
+                    <td colSpan="8" className="text-center">
                       No hay lotes registrados
                     </td>
                   </tr>
@@ -168,6 +224,15 @@ function Lotes() {
                             {estaVencido ? '❌ Vencido' : diasRestantes <= 30 ? '⚠️ Por vencer' : '✅ Activo'}
                           </span>
                         </td>
+                        <td>
+                          <button
+                            onClick={() => abrirHistorial(lote)}
+                            className="btn-historial"
+                            title="Ver historial de movimientos"
+                          >
+                            📊 Historial
+                          </button>
+                        </td>
                       </tr>
                     )
                   })
@@ -177,6 +242,65 @@ function Lotes() {
           </div>
         )}
       </div>
+
+      {/* Modal de historial */}
+      {modalHistorial && loteSeleccionado && (
+        <div className="modal-overlay" onClick={cerrarHistorial}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>📊 Historial FEFO - {loteSeleccionado.product_name}</h2>
+              <button onClick={cerrarHistorial} className="modal-close">✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="historial-info">
+                <p><strong>Código:</strong> {loteSeleccionado.product_code}</p>
+                <p><strong>Lote ID:</strong> LOTE-{loteSeleccionado.id}</p>
+                <p><strong>Stock actual:</strong> {loteSeleccionado.quantity} unidades</p>
+              </div>
+              
+              <table className="historial-table">
+                <thead>
+                  <tr>
+                    <th>Fecha Movimiento</th>
+                    <th>Cantidad</th>
+                    <th>Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {obtenerHistorialLote().length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="text-center">
+                        No hay movimientos registrados para este lote
+                      </td>
+                    </tr>
+                  ) : (
+                    obtenerHistorialLote().map((mov, index) => (
+                      <tr key={index}>
+                        <td>
+                          {new Date(mov.fecha).toLocaleString('es-ES', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </td>
+                        <td>{mov.cantidad}</td>
+                        <td>{mov.observaciones}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="modal-footer">
+              <button onClick={cerrarHistorial} className="btn-secondary">
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
