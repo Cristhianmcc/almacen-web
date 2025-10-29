@@ -11,6 +11,7 @@ import Bajas from './pages/Bajas'
 import Sobrantes from './pages/Sobrantes'
 import Reportes from './pages/Reportes'
 import Lotes from './pages/Lotes'
+import Notificaciones from './pages/Notificaciones'
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="sobrantes" element={<Sobrantes />} />
           <Route path="reportes" element={<Reportes />} />
           <Route path="lotes" element={<Lotes />} />
+          <Route path="notificaciones" element={<Notificaciones />} />
         </Route>
       </Routes>
     </AuthProvider>

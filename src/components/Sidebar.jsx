@@ -14,7 +14,8 @@ function Sidebar({ collapsed, onToggle, isMobile, mobileMenuOpen, onLinkClick })
     { path: '/bajas', label: 'Bajas', icon: '❌' },
     { path: '/sobrantes', label: 'Sobrantes', icon: '➕' },
     { path: '/reportes', label: 'Reportes', icon: '📄' },
-    { path: '/lotes', label: 'Lotes FEFO', icon: '🏷️' }
+    { path: '/lotes', label: 'Lotes FEFO', icon: '🏷️' },
+    { path: '/notificaciones', label: 'Notificaciones', icon: '📧' }
   ]
 
   const handleLogout = async () => {
