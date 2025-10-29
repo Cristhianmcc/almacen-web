@@ -17,12 +17,11 @@ function Alertas() {
 
   return (
     <div className="alertas-page">
-      <div className="page-header">
-        <h1>Alertas de Inventario</h1>
-        <div className="alert-summary">
-          <span className="alert-count">{alertasArray.length}</span>
-          <span className="alert-label">alertas cargadas</span>
-        </div>
+      <h1>⚠️ Alertas de Inventario</h1>
+      
+      <div className="alert-summary-card">
+        <span className="alert-count">{alertasArray.length}</span>
+        <span className="alert-label">alertas cargadas</span>
       </div>
 
       {loading ? (

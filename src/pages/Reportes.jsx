@@ -179,9 +179,7 @@ function Reportes() {
 
   return (
     <div className="reportes-page">
-      <div className="reportes-header">
-        <h1>Reportes</h1>
-      </div>
+      <h1>📄 Reportes</h1>
 
       <div className="filtros-fecha">
         <h3>Filtros de Fecha</h3>

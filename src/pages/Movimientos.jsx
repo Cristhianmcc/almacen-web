@@ -78,7 +78,7 @@ function Movimientos() {
 
   return (
     <div className="movimientos-page">
-      <h1>Registro de Movimientos</h1>
+      <h1>📋 Registro de Movimientos</h1>
 
       <div className="movimientos-grid">
         <div className="card">

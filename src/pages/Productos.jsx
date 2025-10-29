@@ -70,21 +70,21 @@ function Productos() {
 
   return (
     <div className="productos-page">
-      <div className="page-header">
-        <h1>Gestión de Productos</h1>
+      <h1>📦 Gestión de Productos</h1>
+      
+      <div className="productos-controls">
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Buscar por nombre o código..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
         <button className="btn btn-primary" onClick={handleAdd}>
           ➕ Nuevo Producto
         </button>
-      </div>
-
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Buscar por nombre o código..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
       </div>
 
       {loading ? (

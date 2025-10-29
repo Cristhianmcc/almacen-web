@@ -112,7 +112,7 @@ function Lotes() {
 
   return (
     <div className="lotes-page">
-      <h1>Gestión de Lotes FEFO</h1>
+      <h1>🏷️ Gestión de Lotes FEFO</h1>
 
       {estadisticas && (
         <div className="lotes-stats">
