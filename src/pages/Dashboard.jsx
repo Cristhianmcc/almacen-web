@@ -1,19 +1,24 @@
 import { useApi } from '../hooks/useApi'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title } from 'chart.js'
+import { Pie, Bar, Line } from 'react-chartjs-2'
 import './Dashboard.css'
+
+// Registrar componentes de Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title)
 
 function Dashboard() {
   const { data: productos, loading: loadingProductos } = useApi('/products')
   const { data: movimientos, loading: loadingMovimientos } = useApi('/movements')
   const { data: bajas, loading: loadingBajas } = useApi('/withdrawals')
   const { data: sobrantes, loading: loadingSobrantes } = useApi('/surplus')
-  const { data: alertas, loading: loadingAlertas } = useApi('/alerts') // Nuevo: obtener alertas del backend
+  const { data: alertas, loading: loadingAlertas } = useApi('/alerts')
 
   // Asegurar que todos sean arrays
   const productosArray = Array.isArray(productos) ? productos : []
   const movimientosArray = Array.isArray(movimientos) ? movimientos : []
   const bajasArray = Array.isArray(bajas) ? bajas : []
   const sobrantesArray = Array.isArray(sobrantes) ? sobrantes : []
-  const alertasArray = Array.isArray(alertas) ? alertas : [] // Nuevo
+  const alertasArray = Array.isArray(alertas) ? alertas : []
 
   const stats = [
     {
@@ -53,6 +58,213 @@ function Dashboard() {
     }
   ]
 
+  // Datos para gráfico de pastel - Distribución de actividades
+  const pieData = {
+    labels: ['Productos', 'Movimientos', 'Bajas', 'Sobrantes', 'Alertas'],
+    datasets: [{
+      data: [
+        productosArray.length,
+        movimientosArray.length,
+        bajasArray.length,
+        sobrantesArray.length,
+        alertasArray.length
+      ],
+      backgroundColor: [
+        '#3b82f6', // Azul
+        '#8b5cf6', // Morado
+        '#ef4444', // Rojo
+        '#10b981', // Verde
+        '#f59e0b'  // Naranja
+      ],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  }
+
+  // Datos para gráfico de barras - Top 5 productos por stock
+  const topProductos = productosArray
+    .filter(p => p && p.name && p.quantity !== undefined) // Filtrar productos válidos
+    .map(p => ({
+      nombre: p.name,
+      stock: p.quantity || 0,
+      codigo: p.code || 'N/A'
+    }))
+    .sort((a, b) => b.stock - a.stock)
+    .slice(0, 5)
+
+  console.log('📦 Top 5 Productos por Stock:', topProductos)
+
+  const barData = {
+    labels: topProductos.length > 0 
+      ? topProductos.map(p => {
+          const nombre = p.nombre.substring(0, 15)
+          return nombre + (p.nombre.length > 15 ? '...' : '')
+        })
+      : ['Sin datos'],
+    datasets: [{
+      label: 'Stock Actual',
+      data: topProductos.length > 0 ? topProductos.map(p => p.stock) : [0],
+      backgroundColor: 'rgba(59, 130, 246, 0.8)',
+      borderColor: 'rgba(59, 130, 246, 1)',
+      borderWidth: 2,
+      borderRadius: 8
+    }]
+  }
+
+  // Datos para gráfico de líneas - Últimos 6 meses de movimientos
+  const obtenerUltimosSeisMeses = () => {
+    const meses = []
+    const nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+    const hoy = new Date()
+    
+    for (let i = 5; i >= 0; i--) {
+      const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1)
+      const mesNum = fecha.getMonth()
+      const año = fecha.getFullYear()
+      meses.push({
+        key: `${año}-${mesNum}`,
+        label: nombres[mesNum],
+        count: 0
+      })
+    }
+    return meses
+  }
+
+  const mesesData = obtenerUltimosSeisMeses()
+  
+  // Contar movimientos por mes
+  movimientosArray.forEach(mov => {
+    if (mov.fecha_movimiento || mov.created_at || mov.fecha) {
+      const fechaStr = mov.fecha_movimiento || mov.created_at || mov.fecha
+      const fecha = new Date(fechaStr)
+      const mesNum = fecha.getMonth()
+      const año = fecha.getFullYear()
+      const key = `${año}-${mesNum}`
+      
+      const mesEncontrado = mesesData.find(m => m.key === key)
+      if (mesEncontrado) {
+        mesEncontrado.count++
+      }
+    }
+  })
+
+  const lineData = {
+    labels: mesesData.map(m => m.label),
+    datasets: [{
+      label: 'Movimientos',
+      data: mesesData.map(m => m.count),
+      borderColor: 'rgb(139, 92, 246)',
+      backgroundColor: 'rgba(139, 92, 246, 0.1)',
+      tension: 0.4,
+      fill: true,
+      borderWidth: 3,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: 'rgb(139, 92, 246)',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2
+    }]
+  }
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 15,
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: {
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 13
+        },
+        cornerRadius: 8
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          font: {
+            size: 11
+          }
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        }
+      },
+      x: {
+        ticks: {
+          font: {
+            size: 11
+          }
+        },
+        grid: {
+          display: false
+        }
+      }
+    }
+  }
+
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 15,
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          },
+          generateLabels: (chart) => {
+            const data = chart.data
+            return data.labels.map((label, i) => ({
+              text: `${label}: ${data.datasets[0].data[i]}`,
+              fillStyle: data.datasets[0].backgroundColor[i],
+              hidden: false,
+              index: i
+            }))
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: {
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 13
+        },
+        cornerRadius: 8,
+        callbacks: {
+          label: function(context) {
+            const label = context.label || ''
+            const value = context.parsed || 0
+            const total = context.dataset.data.reduce((a, b) => a + b, 0)
+            const percentage = ((value / total) * 100).toFixed(1)
+            return `${label}: ${value} (${percentage}%)`
+          }
+        }
+      }
+    }
+  }
+
   return (
     <div className="dashboard">
       <h1>📊 Dashboard</h1>
@@ -71,6 +283,75 @@ function Dashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Sección de Gráficos */}
+      <div className="charts-section">
+        <h2 className="section-title">📊 Análisis Visual</h2>
+        
+        <div className="charts-grid">
+          {/* Gráfico de Pastel */}
+          <div className="chart-card">
+            <div className="chart-header">
+              <h3>Distribución General</h3>
+              <span className="chart-badge">Pastel</span>
+            </div>
+            <div className="chart-container">
+              {loadingProductos ? (
+                <div className="chart-loading">Cargando datos...</div>
+              ) : (
+                <Pie data={pieData} options={pieOptions} />
+              )}
+            </div>
+          </div>
+
+          {/* Gráfico de Barras */}
+          <div className="chart-card">
+            <div className="chart-header">
+              <h3>Top 5 Productos por Stock</h3>
+              <span className="chart-badge">Barras</span>
+            </div>
+            <div className="chart-container">
+              {loadingProductos ? (
+                <div className="chart-loading">
+                  <div className="loading-spinner"></div>
+                  <p>Cargando productos...</p>
+                </div>
+              ) : topProductos.length === 0 ? (
+                <div className="chart-loading">
+                  <p style={{fontSize: '1.1rem', color: '#666'}}>📦 No hay productos registrados</p>
+                  <p style={{fontSize: '0.9rem', color: '#999', marginTop: '0.5rem'}}>
+                    {productosArray.length === 0 
+                      ? 'Agrega productos desde la sección "Productos"'
+                      : 'Los productos no tienen campos de nombre válidos'}
+                  </p>
+                  <p style={{fontSize: '0.85rem', color: '#aaa', marginTop: '0.5rem'}}>
+                    Total en base de datos: {productosArray.length}
+                  </p>
+                </div>
+              ) : (
+                <Bar data={barData} options={chartOptions} />
+              )}
+            </div>
+          </div>
+
+          {/* Gráfico de Líneas */}
+          <div className="chart-card chart-card-wide">
+            <div className="chart-header">
+              <h3>Movimientos de los Últimos 6 Meses</h3>
+              <span className="chart-badge">Líneas</span>
+            </div>
+            <div className="chart-container">
+              {loadingMovimientos ? (
+                <div className="chart-loading">Cargando datos...</div>
+              ) : mesesData.every(m => m.count === 0) ? (
+                <div className="chart-loading">No hay movimientos registrados</div>
+              ) : (
+                <Line data={lineData} options={chartOptions} />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="dashboard-grid">
