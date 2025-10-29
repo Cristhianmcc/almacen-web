@@ -2,7 +2,8 @@ import axios from 'axios'
 import mockService from './notificationsMock'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://almacen-instituto.onrender.com/api'
-const USE_MOCK = import.meta.env.VITE_USE_MOCK_NOTIFICATIONS !== 'false' // Por defecto usa mock
+// En producción SIEMPRE usa el servicio real
+const USE_MOCK = import.meta.env.MODE === 'production' ? false : (import.meta.env.VITE_USE_MOCK_NOTIFICATIONS !== 'false')
 
 class NotificationService {
   constructor() {
@@ -17,6 +18,9 @@ class NotificationService {
     if (USE_MOCK) {
       console.log('🔧 [NOTIFICACIONES] Usando servicio MOCK (backend no implementado)')
       console.log('💡 Para usar el backend real, configura VITE_USE_MOCK_NOTIFICATIONS=false en .env')
+    } else {
+      console.log('✅ [NOTIFICACIONES] Usando servicio REAL del backend')
+      console.log('🌐 API URL:', BASE_URL)
     }
   }
 
