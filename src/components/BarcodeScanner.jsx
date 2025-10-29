@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Html5QrcodeScanner } from 'html5-qrcode'
+import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 import './BarcodeScanner.css'
 
 function BarcodeScanner({ onScan, onClose }) {
@@ -37,14 +37,15 @@ function BarcodeScanner({ onScan, onClose }) {
         fps: 10,
         qrbox: { width: 250, height: 150 },
         rememberLastUsedCamera: true,
-        supportedScanTypes: [
-          0, // QR_CODE
-          11, // EAN_13
-          12, // EAN_8
-          13, // CODE_128
-          14, // CODE_39
-          17, // UPC_A
-          18, // UPC_E
+        // Solo QR_CODE y CODE_128 (máximo 2 permitidos)
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E
         ],
         videoConstraints: {
           facingMode: "environment" // Cámara trasera
