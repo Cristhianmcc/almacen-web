@@ -8,27 +8,28 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 9999;
   animation: fadeIn 0.3s ease;
   padding: 1rem;
+  overflow-y: auto;
 }
 
 .scanner-modal {
   background: white;
   border-radius: 16px;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 @keyframes fadeIn {
@@ -87,20 +88,25 @@
 
 /* Body */
 .scanner-body {
-  padding: 2rem;
+  padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
+  background: white;
+  min-height: 200px;
 }
 
 /* Pantalla de inicio */
 .scanner-start {
   text-align: center;
+  background: white;
+  width: 100%;
 }
 
 .scanner-icon {
   font-size: 5rem;
   margin-bottom: 1rem;
   animation: bounce 2s ease-in-out infinite;
+  display: block;
 }
 
 @keyframes bounce {
@@ -308,14 +314,20 @@
    ============================================ */
 
 @media (max-width: 768px) {
+  .scanner-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
   .scanner-modal {
     max-width: 100%;
-    margin: 0.5rem;
+    border-radius: 20px 20px 0 0;
     max-height: 95vh;
+    margin: 0;
   }
 
   .scanner-header {
-    padding: 1.25rem;
+    padding: 1rem 1.25rem;
   }
 
   .scanner-header h2 {
@@ -329,40 +341,46 @@
   }
 
   .scanner-body {
-    padding: 1.5rem;
-  }
-
-  .scanner-icon {
-    font-size: 4rem;
-  }
-
-  .scanner-start h3 {
-    font-size: 1.25rem;
-  }
-
-  .scanner-start > p {
-    font-size: 0.938rem;
-  }
-
-  .scanner-instructions {
     padding: 1.25rem;
   }
 
-  .instruction-item {
+  .scanner-icon {
+    font-size: 3.5rem;
+  }
+
+  .scanner-start h3 {
+    font-size: 1.125rem;
+  }
+
+  .scanner-start > p {
     font-size: 0.875rem;
   }
 
+  .scanner-instructions {
+    padding: 1rem;
+  }
+
+  .instruction-item {
+    font-size: 0.813rem;
+    padding: 0.625rem 0;
+  }
+
   .instruction-icon {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 
   .btn-start-scan {
     padding: 0.875rem 2rem;
     font-size: 1rem;
+    width: 100%;
   }
 
   .scanner-footer {
     padding: 1rem 1.25rem;
+  }
+
+  .btn-cancel {
+    width: 100%;
   }
 }
 
@@ -373,8 +391,8 @@
   }
 
   .scanner-modal {
-    border-radius: 16px 16px 0 0;
-    max-height: 90vh;
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
     animation: slideUpMobile 0.3s ease-out;
   }
 
@@ -388,23 +406,55 @@
   }
 
   .scanner-body {
-    padding: 1.25rem;
+    padding: 1rem;
+    min-height: 150px;
   }
 
   .scanner-icon {
-    font-size: 3.5rem;
+    font-size: 3rem;
+  }
+
+  .scanner-start h3 {
+    font-size: 1rem;
+  }
+
+  .scanner-start > p {
+    font-size: 0.813rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .scanner-instructions {
+    padding: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .instruction-item {
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
   }
 
   .btn-start-scan {
     width: 100%;
     justify-content: center;
+    padding: 1rem;
+    font-size: 0.938rem;
   }
 
   #barcode-scanner-container {
-    min-height: 250px;
+    min-height: 200px;
+    max-height: 400px;
   }
 
   #barcode-scanner-container video {
-    max-height: 300px;
+    max-height: 250px;
+  }
+
+  .scanner-footer {
+    padding: 0.875rem 1rem;
+  }
+
+  .btn-cancel {
+    width: 100%;
+    padding: 0.875rem;
   }
 }

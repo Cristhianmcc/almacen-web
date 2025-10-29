@@ -9,8 +9,21 @@ function BarcodeScanner({ onScan, onClose }) {
   const html5QrcodeScannerRef = useRef(null)
 
   useEffect(() => {
+    // Prevenir scroll en el body cuando el modal está abierto
+    document.body.style.overflow = 'hidden'
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+      stopScanner()
+    }
+  }, [])
+
+  useEffect(() => {
     if (isScanning) {
-      startScanner()
+      // Pequeño delay para asegurar que el DOM esté listo
+      setTimeout(() => {
+        startScanner()
+      }, 100)
     }
 
     return () => {
@@ -19,60 +32,52 @@ function BarcodeScanner({ onScan, onClose }) {
   }, [isScanning])
 
   const startScanner = () => {
-    const config = {
-      fps: 10, // Cuadros por segundo
-      qrbox: function(viewfinderWidth, viewfinderHeight) {
-        // Área de escaneo responsiva según el tamaño del dispositivo
-        const minEdgePercentage = 70 // 70% del ancho disponible
-        const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight)
-        const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage / 100)
-        return {
-          width: qrboxSize,
-          height: Math.floor(qrboxSize * 0.7) // Relación 1:0.7 para códigos de barras
-        }
-      },
-      aspectRatio: 1.0, // Relación de aspecto 1:1
-      rememberLastUsedCamera: true,
-      // Mejor configuración para móviles
-      supportedScanTypes: [
-        0, // QR_CODE
-        11, // EAN_13
-        12, // EAN_8
-        13, // CODE_128
-        14, // CODE_39
-        17, // UPC_A
-        18, // UPC_E
-      ],
-      // Optimización para móviles
-      videoConstraints: {
-        facingMode: { ideal: "environment" }, // Cámara trasera en móviles
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      },
-      showTorchButtonIfSupported: true, // Mostrar botón de linterna en móviles
-    }
-
-    html5QrcodeScannerRef.current = new Html5QrcodeScanner(
-      "barcode-scanner-container",
-      config,
-      false
-    )
-
-    html5QrcodeScannerRef.current.render(
-      (decodedText) => {
-        // Éxito al escanear
-        console.log('🔍 Código escaneado:', decodedText)
-        onScan(decodedText)
-        stopScanner()
-      },
-      (errorMessage) => {
-        // Error de escaneo (normal, ocurre todo el tiempo mientras busca)
-        // Solo mostrar errores críticos
-        if (errorMessage.includes('NotAllowedError') || errorMessage.includes('PermissionDenied')) {
-          setError('Por favor, permite el acceso a la cámara en la configuración de tu navegador')
+    try {
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 150 },
+        rememberLastUsedCamera: true,
+        supportedScanTypes: [
+          0, // QR_CODE
+          11, // EAN_13
+          12, // EAN_8
+          13, // CODE_128
+          14, // CODE_39
+          17, // UPC_A
+          18, // UPC_E
+        ],
+        videoConstraints: {
+          facingMode: "environment" // Cámara trasera
         }
       }
-    )
+
+      html5QrcodeScannerRef.current = new Html5QrcodeScanner(
+        "barcode-scanner-container",
+        config,
+        false
+      )
+
+      html5QrcodeScannerRef.current.render(
+        (decodedText) => {
+          console.log('🔍 Código escaneado:', decodedText)
+          onScan(decodedText)
+          stopScanner()
+        },
+        (errorMessage) => {
+          // Solo capturar errores críticos
+          if (errorMessage && typeof errorMessage === 'string') {
+            if (errorMessage.includes('NotAllowedError') || 
+                errorMessage.includes('PermissionDenied') ||
+                errorMessage.includes('NotFoundError')) {
+              setError('⚠️ No se puede acceder a la cámara. Verifica los permisos.')
+            }
+          }
+        }
+      )
+    } catch (err) {
+      console.error('Error al iniciar escáner:', err)
+      setError('❌ Error al inicializar el escáner. Intenta de nuevo.')
+    }
   }
 
   const stopScanner = () => {
