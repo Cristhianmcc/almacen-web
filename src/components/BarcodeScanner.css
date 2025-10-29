@@ -192,11 +192,20 @@
   overflow: hidden;
   border: 3px solid #3b82f6;
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+  width: 100%;
+  min-height: 300px;
 }
 
 /* Override estilos de html5-qrcode */
 #barcode-scanner-container video {
   border-radius: 8px;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: cover;
+}
+
+#barcode-scanner-container > div {
+  width: 100% !important;
 }
 
 #barcode-scanner-container button {
@@ -206,6 +215,8 @@
   border-radius: 6px !important;
   font-weight: 500 !important;
   transition: all 0.2s ease !important;
+  margin: 0.5rem !important;
+  min-height: 44px !important; /* Touch target para móviles */
 }
 
 #barcode-scanner-container button:hover {
@@ -218,6 +229,9 @@
   border-radius: 6px !important;
   padding: 0.5rem !important;
   font-size: 0.875rem !important;
+  min-height: 44px !important; /* Touch target para móviles */
+  width: 100% !important;
+  max-width: 300px !important;
 }
 
 /* Tips durante el escaneo */
@@ -361,6 +375,16 @@
   .scanner-modal {
     border-radius: 16px 16px 0 0;
     max-height: 90vh;
+    animation: slideUpMobile 0.3s ease-out;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 
   .scanner-body {
@@ -374,5 +398,13 @@
   .btn-start-scan {
     width: 100%;
     justify-content: center;
+  }
+
+  #barcode-scanner-container {
+    min-height: 250px;
+  }
+
+  #barcode-scanner-container video {
+    max-height: 300px;
   }
 }

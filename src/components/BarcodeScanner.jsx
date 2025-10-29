@@ -21,20 +21,35 @@ function BarcodeScanner({ onScan, onClose }) {
   const startScanner = () => {
     const config = {
       fps: 10, // Cuadros por segundo
-      qrbox: { width: 250, height: 150 }, // Área de escaneo
+      qrbox: function(viewfinderWidth, viewfinderHeight) {
+        // Área de escaneo responsiva según el tamaño del dispositivo
+        const minEdgePercentage = 70 // 70% del ancho disponible
+        const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight)
+        const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage / 100)
+        return {
+          width: qrboxSize,
+          height: Math.floor(qrboxSize * 0.7) // Relación 1:0.7 para códigos de barras
+        }
+      },
+      aspectRatio: 1.0, // Relación de aspecto 1:1
       rememberLastUsedCamera: true,
-      // Formatos de código de barras soportados
-      formatsToSupport: [
-        'QR_CODE',
-        'EAN_13',
-        'EAN_8',
-        'UPC_A',
-        'UPC_E',
-        'CODE_128',
-        'CODE_39',
-        'CODE_93',
-        'ITF',
-      ]
+      // Mejor configuración para móviles
+      supportedScanTypes: [
+        0, // QR_CODE
+        11, // EAN_13
+        12, // EAN_8
+        13, // CODE_128
+        14, // CODE_39
+        17, // UPC_A
+        18, // UPC_E
+      ],
+      // Optimización para móviles
+      videoConstraints: {
+        facingMode: { ideal: "environment" }, // Cámara trasera en móviles
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      showTorchButtonIfSupported: true, // Mostrar botón de linterna en móviles
     }
 
     html5QrcodeScannerRef.current = new Html5QrcodeScanner(
@@ -52,7 +67,10 @@ function BarcodeScanner({ onScan, onClose }) {
       },
       (errorMessage) => {
         // Error de escaneo (normal, ocurre todo el tiempo mientras busca)
-        // No mostrar estos errores al usuario
+        // Solo mostrar errores críticos
+        if (errorMessage.includes('NotAllowedError') || errorMessage.includes('PermissionDenied')) {
+          setError('Por favor, permite el acceso a la cámara en la configuración de tu navegador')
+        }
       }
     )
   }
