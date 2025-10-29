@@ -240,6 +240,55 @@
   max-width: 300px !important;
 }
 
+/* Traducir textos de html5-qrcode al español */
+#barcode-scanner-container #html5-qrcode-button-camera-permission::before {
+  content: "Solicitar Permisos de Cámara" !important;
+}
+
+#barcode-scanner-container #html5-qrcode-button-camera-start::before {
+  content: "Iniciar Cámara" !important;
+}
+
+#barcode-scanner-container #html5-qrcode-button-camera-stop::before {
+  content: "Detener Cámara" !important;
+}
+
+#barcode-scanner-container #html5-qrcode-button-file-selection::before {
+  content: "Escanear una Imagen" !important;
+}
+
+/* Ocultar textos originales en inglés */
+#barcode-scanner-container button span {
+  font-size: 0 !important;
+}
+
+#barcode-scanner-container button::after {
+  font-size: 0.875rem !important;
+}
+
+/* Traducir el texto "Request Camera Permissions" */
+#barcode-scanner-container button#html5-qrcode-button-camera-permission {
+  font-size: 0 !important;
+}
+
+#barcode-scanner-container button#html5-qrcode-button-camera-permission::after {
+  content: "Solicitar Permisos de Cámara";
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Traducir "Scan an Image File" */
+#barcode-scanner-container a {
+  font-size: 0 !important;
+}
+
+#barcode-scanner-container a::after {
+  content: "Escanear una Imagen";
+  font-size: 0.875rem;
+  text-decoration: underline;
+  color: #3b82f6;
+}
+
 /* Tips durante el escaneo */
 .scanner-tips {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
