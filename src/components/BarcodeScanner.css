@@ -1,0 +1,378 @@
+/* ============================================
+   BARCODE SCANNER - Escáner de Código de Barras
+   ============================================ */
+
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+  padding: 1rem;
+}
+
+.scanner-modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header */
+.scanner-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.scanner-header h2 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+
+.scanner-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-weight: 300;
+}
+
+.scanner-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Body */
+.scanner-body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Pantalla de inicio */
+.scanner-start {
+  text-align: center;
+}
+
+.scanner-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.scanner-start h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.scanner-start > p {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0 0 2rem 0;
+}
+
+/* Instrucciones */
+.scanner-instructions {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 2px solid #bae6fd;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  font-size: 0.938rem;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.instruction-item:not(:last-child) {
+  border-bottom: 1px solid #bae6fd;
+}
+
+.instruction-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* Botón de inicio */
+.btn-start-scan {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-start-scan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.btn-start-scan:active {
+  transform: translateY(0);
+}
+
+/* Escáner activo */
+.scanner-active {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+#barcode-scanner-container {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid #3b82f6;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+}
+
+/* Override estilos de html5-qrcode */
+#barcode-scanner-container video {
+  border-radius: 8px;
+}
+
+#barcode-scanner-container button {
+  background: #3b82f6 !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+#barcode-scanner-container button:hover {
+  background: #2563eb !important;
+  transform: translateY(-1px);
+}
+
+#barcode-scanner-container select {
+  border: 2px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  padding: 0.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* Tips durante el escaneo */
+.scanner-tips {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.scanner-tips p {
+  margin: 0;
+  color: #92400e;
+  font-size: 0.938rem;
+}
+
+.scanner-tips strong {
+  color: #78350f;
+}
+
+/* Error */
+.scanner-error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #f87171;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #991b1b;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+.scanner-error span:first-child {
+  font-size: 1.5rem;
+}
+
+/* Footer */
+.scanner-footer {
+  padding: 1.25rem 1.5rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancel {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.938rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.btn-cancel:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .scanner-modal {
+    max-width: 100%;
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+
+  .scanner-header {
+    padding: 1.25rem;
+  }
+
+  .scanner-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .scanner-close {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .scanner-body {
+    padding: 1.5rem;
+  }
+
+  .scanner-icon {
+    font-size: 4rem;
+  }
+
+  .scanner-start h3 {
+    font-size: 1.25rem;
+  }
+
+  .scanner-start > p {
+    font-size: 0.938rem;
+  }
+
+  .scanner-instructions {
+    padding: 1.25rem;
+  }
+
+  .instruction-item {
+    font-size: 0.875rem;
+  }
+
+  .instruction-icon {
+    font-size: 1.25rem;
+  }
+
+  .btn-start-scan {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+
+  .scanner-footer {
+    padding: 1rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scanner-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .scanner-modal {
+    border-radius: 16px 16px 0 0;
+    max-height: 90vh;
+  }
+
+  .scanner-body {
+    padding: 1.25rem;
+  }
+
+  .scanner-icon {
+    font-size: 3.5rem;
+  }
+
+  .btn-start-scan {
+    width: 100%;
+    justify-content: center;
+  }
+}

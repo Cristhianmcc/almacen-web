@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useApi, useApiMutation } from '../hooks/useApi'
 import ProductoModal from '../components/ProductoModal'
+import BarcodeScanner from '../components/BarcodeScanner'
 import './Productos.css'
 
 function Productos() {
@@ -8,6 +9,7 @@ function Productos() {
   const { mutate, loading: mutating } = useApiMutation()
   const [searchTerm, setSearchTerm] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
 
   // Asegurar que productos sea un array
@@ -64,6 +66,26 @@ function Productos() {
     }
   }
 
+  const handleScan = (code) => {
+    console.log('📷 Código escaneado:', code)
+    
+    // Buscar producto por código
+    const product = productosArray.find(p => p.code === code)
+    
+    if (product) {
+      // Si existe, abrir modal para editar
+      alert(`✅ Producto encontrado: ${product.name}`)
+      handleEdit(product)
+    } else {
+      // Si no existe, abrir modal para crear con el código pre-rellenado
+      alert(`📦 Producto no encontrado. Creando nuevo producto con código: ${code}`)
+      setEditingProduct({ code }) // Pre-rellenar el código
+      setShowModal(true)
+    }
+    
+    setShowScanner(false)
+  }
+
   if (error) {
     return <div className="alert alert-danger">{error}</div>
   }
@@ -82,9 +104,14 @@ function Productos() {
             className="search-input"
           />
         </div>
-        <button className="btn btn-primary" onClick={handleAdd}>
-          ➕ Nuevo Producto
-        </button>
+        <div className="action-buttons">
+          <button className="btn btn-scan" onClick={() => setShowScanner(true)}>
+            📷 Escanear
+          </button>
+          <button className="btn btn-primary" onClick={handleAdd}>
+            ➕ Nuevo Producto
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -182,6 +209,13 @@ function Productos() {
           onSave={handleSave}
           onClose={() => setShowModal(false)}
           loading={mutating}
+        />
+      )}
+
+      {showScanner && (
+        <BarcodeScanner
+          onScan={handleScan}
+          onClose={() => setShowScanner(false)}
         />
       )}
     </div>
