@@ -35,7 +35,7 @@ function Sidebar({ collapsed, onToggle, isMobile, mobileMenuOpen, onLinkClick })
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${isMobile ? 'mobile' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
-        <h2>{collapsed && !isMobile ? 'SA' : 'Sistema de Almacén'}</h2>
+        <h2>{collapsed && !isMobile ? 'AL' : 'Almacén Lurín'}</h2>
         {!isMobile && (
           <button 
             className="toggle-btn" 

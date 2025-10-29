@@ -36,7 +36,21 @@ function Login() {
         console.log('✅ Login exitoso, redirigiendo...')
         navigate('/')
       } else {
-        setError(result.error || 'Credenciales incorrectas')
+        // Traducir mensajes de error comunes al español
+        let errorMessage = result.error || 'Credenciales incorrectas'
+        
+        // Detectar y traducir errores de Supabase
+        if (errorMessage.includes('Invalid login credentials')) {
+          errorMessage = 'Credenciales de acceso inválidas'
+        } else if (errorMessage.includes('Email not confirmed')) {
+          errorMessage = 'Email no confirmado'
+        } else if (errorMessage.includes('Invalid email')) {
+          errorMessage = 'Email inválido'
+        } else if (errorMessage.includes('User not found')) {
+          errorMessage = 'Usuario no encontrado'
+        }
+        
+        setError(errorMessage)
       }
     } catch (err) {
       console.error('Error en login:', err)
@@ -49,10 +63,11 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-header">
-          <div className="login-icon">📦</div>
-          <h1>Sistema de Almacén</h1>
-          <p>Instituto Educativo</p>
+        <div className="avatar-container">
+          <div className="avatar-circle">
+            <span className="avatar-icon">👤</span>
+          </div>
+          <h2 className="user-greeting">Bienvenido</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -63,36 +78,32 @@ function Login() {
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="email">
-              <span className="label-icon">📧</span>
-              Email
-            </label>
+          <div className="input-group">
+            <span className="input-icon">�</span>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@instituto.edu"
+              placeholder="Username"
               disabled={loading}
               autoComplete="email"
               autoFocus
+              className="login-input"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">
-              <span className="label-icon">🔒</span>
-              Contraseña
-            </label>
+          <div className="input-group">
+            <span className="input-icon">🔒</span>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Password"
               disabled={loading}
               autoComplete="current-password"
+              className="login-input"
             />
           </div>
 
@@ -101,26 +112,13 @@ function Login() {
             className="login-button"
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Iniciando sesión...
-              </>
-            ) : (
-              <>
-                <span>🔑</span>
-                Iniciar Sesión
-              </>
-            )}
+            {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
+
+          
         </form>
 
-        <div className="login-footer">
-          <p>Sistema de Gestión de Almacén v1.0</p>
-          <p className="login-hint">
-            💡 Si no tienes acceso, contacta al administrador
-          </p>
-        </div>
+       
       </div>
     </div>
   )
