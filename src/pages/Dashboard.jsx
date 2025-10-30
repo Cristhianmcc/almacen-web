@@ -1,6 +1,7 @@
 import { useApi } from '../hooks/useApi'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title } from 'chart.js'
 import { Pie, Bar, Line } from 'react-chartjs-2'
+import { useState, useEffect } from 'react'
 import './Dashboard.css'
 
 // Registrar componentes de Chart.js
@@ -11,14 +12,108 @@ function Dashboard() {
   const { data: movimientos, loading: loadingMovimientos } = useApi('/movements')
   const { data: bajas, loading: loadingBajas } = useApi('/withdrawals')
   const { data: sobrantes, loading: loadingSobrantes } = useApi('/surplus')
-  const { data: alertas, loading: loadingAlertas } = useApi('/alerts')
+
+  // Estado para alertas generadas automáticamente
+  const [alertasGeneradas, setAlertasGeneradas] = useState([])
 
   // Asegurar que todos sean arrays
   const productosArray = Array.isArray(productos) ? productos : []
   const movimientosArray = Array.isArray(movimientos) ? movimientos : []
   const bajasArray = Array.isArray(bajas) ? bajas : []
   const sobrantesArray = Array.isArray(sobrantes) ? sobrantes : []
-  const alertasArray = Array.isArray(alertas) ? alertas : []
+
+  // Función para generar alertas automáticamente desde productos
+  useEffect(() => {
+    if (!productosArray || productosArray.length === 0) {
+      console.log('📊 Dashboard: No hay productos para generar alertas')
+      setAlertasGeneradas([])
+      return
+    }
+
+    console.log('📊 Dashboard: Generando alertas automáticas desde', productosArray.length, 'productos')
+    
+    const alertasNuevas = []
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
+    productosArray.forEach(producto => {
+      if (!producto || !producto.id) return
+
+      const stockActual = producto.quantity ?? 0
+      const stockMinimo = producto.min_stock ?? 0
+      const fechaVencimiento = producto.expiry_date ? new Date(producto.expiry_date) : null
+
+      // Alerta de stock bajo
+      if (stockMinimo > 0 && stockActual < stockMinimo) {
+        const porcentaje = Math.round((stockActual / stockMinimo) * 100)
+        const esCritico = stockActual === 0 || porcentaje < 25
+
+        alertasNuevas.push({
+          id: `bajo_stock_${producto.id}`,
+          tipo_alerta: esCritico ? 'stock_critico' : 'bajo_stock',
+          nivel_prioridad: esCritico ? 'Alta' : 'Media',
+          estado_alerta: 'Activa',
+          nombre_producto: producto.name,
+          productos: {
+            nombre_item: producto.name,
+            stock_actual: stockActual,
+            stock_minimo: stockMinimo
+          },
+          cantidad_actual: stockActual,
+          umbral: stockMinimo,
+          mensaje: esCritico 
+            ? `CRÍTICO: ${producto.name} sin stock (${stockActual}/${stockMinimo})`
+            : `Stock bajo: ${producto.name} (${stockActual}/${stockMinimo})`,
+          fecha_generacion: new Date().toISOString()
+        })
+      }
+
+      // Alerta de vencimiento
+      if (fechaVencimiento) {
+        const diffTiempo = fechaVencimiento.getTime() - hoy.getTime()
+        const diasRestantes = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24))
+
+        if (diasRestantes <= 0) {
+          // Producto vencido
+          alertasNuevas.push({
+            id: `vencido_${producto.id}`,
+            tipo_alerta: 'vencido',
+            nivel_prioridad: 'Alta',
+            estado_alerta: 'Activa',
+            nombre_producto: producto.name,
+            productos: {
+              nombre_item: producto.name,
+              fecha_vencimiento: producto.expiry_date
+            },
+            mensaje: `VENCIDO: ${producto.name} - Venció hace ${Math.abs(diasRestantes)} días`,
+            fecha_generacion: new Date().toISOString()
+          })
+        } else if (diasRestantes <= 30) {
+          // Próximo a vencer
+          alertasNuevas.push({
+            id: `proximo_vencimiento_${producto.id}`,
+            tipo_alerta: 'proximo_vencimiento',
+            nivel_prioridad: diasRestantes <= 7 ? 'Alta' : 'Media',
+            estado_alerta: 'Activa',
+            nombre_producto: producto.name,
+            productos: {
+              nombre_item: producto.name,
+              fecha_vencimiento: producto.expiry_date
+            },
+            dias_restantes: diasRestantes,
+            mensaje: `Vence en ${diasRestantes} días: ${producto.name}`,
+            fecha_generacion: new Date().toISOString()
+          })
+        }
+      }
+    })
+
+    console.log('📊 Dashboard: Alertas generadas:', alertasNuevas.length)
+    setAlertasGeneradas(alertasNuevas)
+  }, [productosArray])
+
+  const alertasArray = alertasGeneradas
+  const loadingAlertas = loadingProductos
 
   const stats = [
     {

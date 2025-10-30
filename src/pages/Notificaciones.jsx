@@ -358,8 +358,6 @@ Las alertas se enviarán automáticamente cuando detectemos productos con stock 
             <ul>
               <li>Las notificaciones se envían automáticamente a la hora configurada</li>
               <li>Solo recibirás emails si hay alertas activas</li>
-              <li>Puedes probar el envío con el botón "Enviar Email de Prueba"</li>
-              <li>Servicio gratuito hasta 3,000 emails/mes</li>
             </ul>
           </div>
         </div>
