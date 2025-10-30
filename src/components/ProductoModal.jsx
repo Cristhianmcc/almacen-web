@@ -16,6 +16,13 @@ function ProductoModal({ product, onSave, onClose, loading }) {
 
   useEffect(() => {
     if (product) {
+      // Extraer solo la fecha (YYYY-MM-DD) del campo expiry_date
+      let fechaVencimiento = new Date().toISOString().split('T')[0]
+      if (product.expiry_date) {
+        // Si viene con timestamp ISO, tomar solo la parte de fecha
+        fechaVencimiento = product.expiry_date.split('T')[0]
+      }
+      
       setFormData({
         code: product.code || '',
         name: product.name || '',
@@ -25,8 +32,12 @@ function ProductoModal({ product, onSave, onClose, loading }) {
         mayor: product.mayor || '',
         sub_account: product.sub_account || '',
         quantity: product.quantity || '',
-        expiry_date: product.expiry_date || new Date().toISOString().split('T')[0]
+        expiry_date: fechaVencimiento
       })
+      
+      console.log('📝 [ProductoModal] Cargando producto para editar:')
+      console.log('   Fecha del backend:', product.expiry_date)
+      console.log('   Fecha en el form:', fechaVencimiento)
     }
   }, [product])
 

@@ -18,6 +18,18 @@ function Movimientos() {
     reason: '',
     expiry_date: ''
   })
+  
+  // Estados para el buscador de productos
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  
+  // Filtrar productos según búsqueda
+  const filteredProducts = productosArray.filter(p => 
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.brand?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -25,6 +37,27 @@ function Movimientos() {
       ...prev,
       [name]: name === 'quantity' || name === 'product_id' ? Number(value) : value
     }))
+  }
+  
+  // Manejar selección de producto desde el buscador
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product)
+    setFormData(prev => ({
+      ...prev,
+      product_id: product.id
+    }))
+    setSearchTerm(product.name)
+    setShowDropdown(false)
+  }
+  
+  // Limpiar selección de producto
+  const handleClearProduct = () => {
+    setSelectedProduct(null)
+    setFormData(prev => ({
+      ...prev,
+      product_id: ''
+    }))
+    setSearchTerm('')
   }
 
   const handleSubmit = async (e) => {
@@ -69,6 +102,9 @@ function Movimientos() {
         reason: '',
         expiry_date: ''
       })
+      // Limpiar también el buscador
+      setSearchTerm('')
+      setSelectedProduct(null)
       refetch()
     } else {
       console.error('[Movimientos] Error detallado:', result)
@@ -102,19 +138,90 @@ function Movimientos() {
           <form onSubmit={handleSubmit} className="movimiento-form">
             <div className="form-group">
               <label>Producto *</label>
-              <select
-                name="product_id"
-                value={formData.product_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione un producto</option>
-                {productosArray.map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} (Stock: {p.quantity})
-                  </option>
-                ))}
-              </select>
+              
+              {/* Buscador de productos con autocompletado */}
+              <div className="product-search-container">
+                <div className="search-input-wrapper">
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Buscar por nombre, código o marca..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value)
+                      setShowDropdown(true)
+                      if (e.target.value === '') {
+                        handleClearProduct()
+                      }
+                    }}
+                    onFocus={() => setShowDropdown(true)}
+                    required
+                  />
+                  
+                  {selectedProduct && (
+                    <button
+                      type="button"
+                      className="clear-btn"
+                      onClick={handleClearProduct}
+                      title="Limpiar selección"
+                    >
+                      ✕
+                    </button>
+                  )}
+                  
+                  <span className="search-icon">🔍</span>
+                </div>
+                
+                {/* Dropdown con resultados */}
+                {showDropdown && searchTerm && !selectedProduct && (
+                  <div className="search-dropdown">
+                    {filteredProducts.length > 0 ? (
+                      <>
+                        <div className="dropdown-header">
+                          {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
+                        </div>
+                        {filteredProducts.map(product => (
+                          <div
+                            key={product.id}
+                            className="dropdown-item"
+                            onClick={() => handleSelectProduct(product)}
+                          >
+                            <div className="product-info">
+                              <div className="product-name">{product.name}</div>
+                              <div className="product-details">
+                                <span className="product-code">📦 {product.code}</span>
+                                {product.brand && (
+                                  <span className="product-brand">🏷️ {product.brand}</span>
+                                )}
+                                <span className={`product-stock ${product.quantity < 20 ? 'low' : ''}`}>
+                                  Stock: {product.quantity}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="dropdown-empty">
+                        ❌ No se encontraron productos con "{searchTerm}"
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Producto seleccionado */}
+                {selectedProduct && (
+                  <div className="selected-product">
+                    <div className="selected-product-info">
+                      <strong>{selectedProduct.name}</strong>
+                      <span className="selected-product-meta">
+                        {selectedProduct.code} • Stock disponible: {selectedProduct.quantity}
+                      </span>
+                    </div>
+                    <span className="selected-badge">✓</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="form-group">

@@ -145,6 +145,36 @@ class ApiResponse {
   _transformProductToBackend(product) {
     if (!product) return null
     
+    // FIX DEFINITIVO: Enviar SOLO la fecha en formato YYYY-MM-DD sin hora
+    // El backend tiene problemas con ISO timestamps, así que enviamos fecha pura
+    let fechaVencimiento = product.expiry_date
+    if (fechaVencimiento) {
+      // Si la fecha ya viene con timestamp (ISO), extraer solo la parte de fecha
+      let fechaSoloString = fechaVencimiento
+      if (fechaVencimiento.includes('T')) {
+        fechaSoloString = fechaVencimiento.split('T')[0]
+      }
+      
+      // Parsear componentes de fecha de forma segura
+      const [year, month, day] = fechaSoloString.split('-').map(part => parseInt(part, 10))
+      
+      // Validar y formatear la fecha correctamente en formato YYYY-MM-DD
+      if (year && month && day) {
+        // Asegurar que mes y día tengan 2 dígitos con padding de ceros
+        const monthStr = String(month).padStart(2, '0')
+        const dayStr = String(day).padStart(2, '0')
+        fechaVencimiento = `${year}-${monthStr}-${dayStr}`
+        
+        console.log('🔧 [FIX FECHA] Conversión de fecha:')
+        console.log('   📥 Fecha recibida:', product.expiry_date)
+        console.log('   📅 Componentes parseados:', { year, month, day })
+        console.log('   📤 Fecha FINAL a enviar:', fechaVencimiento)
+        console.log('   ✅ Formato: YYYY-MM-DD (SIN hora)')
+      } else {
+        console.warn('⚠️ [FIX FECHA] No se pudo parsear la fecha:', product.expiry_date)
+      }
+    }
+    
     const backendProduct = {
       codigo_item: product.code,
       nombre_item: product.name,
@@ -154,10 +184,10 @@ class ApiResponse {
       mayor: product.mayor ? Number(product.mayor) : 0,
       sub_cta: product.sub_account || '',
       stock_actual: Number(product.quantity),
-      fecha_vencimiento: product.expiry_date
+      fecha_vencimiento: fechaVencimiento
     }
     
-    console.log('[API] Producto transformado para backend:', backendProduct)
+    console.log('[API] 📦 Producto transformado completo:', backendProduct)
     return backendProduct
   }
 
